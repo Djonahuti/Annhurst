@@ -20,6 +20,17 @@ type Bus = {
   }[];
 };
 
+type DriverRow = {
+  name: string | null;
+};
+
+type BusQueryRow = {
+  id: string | number;
+  bus_code: string | number;
+  plate_no: string | number;
+  driver: DriverRow[] | null;
+};
+
 const paymentSchema = z.object({
   bus: z.string(),
   amount: z.number().min(1),
@@ -30,7 +41,7 @@ const paymentSchema = z.object({
 
 export default function CoordinatorDashboard() {
   const [buses, setBuses] = useState<Bus[]>([]);
-  const form = useForm({
+  const form = useForm<z.infer<typeof paymentSchema>>({
     resolver: zodResolver(paymentSchema),
     defaultValues: { bus: '', amount: 0, payment_date: '', pay_type: '', pay_complete: false },
   });
@@ -49,12 +60,12 @@ export default function CoordinatorDashboard() {
         if (error) {
           console.error("Error fetching buses:", error);
         } else {
-          const normalized: Bus[] = (data ?? []).map((item: any) => ({
+          const normalized: Bus[] = (data ?? []).map((item: BusQueryRow) => ({
             id: String(item.id),
             bus_code: String(item.bus_code),
             plate_no: String(item.plate_no),
             driver: Array.isArray(item.driver)
-              ? item.driver.map((d: any) => ({ name: String(d?.name ?? '') }))
+              ? item.driver.map((d: DriverRow) => ({ name: String(d?.name ?? '') }))
               : [],
           }));
           setBuses(normalized);
@@ -65,7 +76,7 @@ export default function CoordinatorDashboard() {
     fetchBuses();
   }, []);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: z.infer<typeof paymentSchema>) => {
     await supabase.from('payment').insert({
       bus: data.bus,
       amount: data.amount,

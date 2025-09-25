@@ -2,6 +2,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type PageContent = {
   title: string;
@@ -51,11 +52,16 @@ export default async function Home() {
       <section className="bg-primary text-primary-foreground py-16 text-center">
         <div className="container mx-auto">
           {settingsContent.logo && (
-            <img
-              src={settingsContent.logo}
-              alt="Annhurst Logo"
-              className="mx-auto mb-4 h-16"
-            />
+            <div className="mx-auto mb-4 h-16 w-auto relative" style={{ inlineSize: 'fit-content' }}>
+              <Image
+                src={settingsContent.logo}
+                alt="Annhurst Logo"
+                width={256}
+                height={64}
+                className="h-16 w-auto"
+                priority
+              />
+            </div>
           )}
           <h1 className="text-4xl font-bold">{pageContent.hero_big_black}</h1>
           <h2 className="text-2xl text-secondary-foreground mt-2">
