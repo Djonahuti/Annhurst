@@ -33,7 +33,7 @@ export default function SignUp() {
       <Input value={email} onChange={(e) => setEmail(e.target.value)} />
       <Label>Password</Label>
       <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <Button onClick={handleSignUp}>Login</Button>
+      <Button onClick={handleSignUp}>Sign Up</Button>
     </div>
   );
 }
