@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { LogOut, Menu, X } from 'lucide-react';
 import './globals.css';
 import { Toaster } from 'sonner';
+import { ThemeProvider } from '@/components/Shared/theme-provider';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 type UserRole = 'driver' | 'coordinator' | 'admin' | 'editor' | 'viewer' | null;
 
@@ -66,8 +68,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   };
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-gray-100">
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+        >
           <header className="bg-primary text-primary-foreground p-4">
             <div className="container mx-auto flex justify-between items-center">
               <Link href="/" className="text-2xl font-bold">
@@ -133,6 +141,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     </>
                   )}
                 </ul>
+                <ThemeToggle />
               </nav>
             </div>
           </header>
@@ -143,6 +152,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </div>
           </footer>
         <Toaster />
+      </ThemeProvider>
       </body>
     </html>
   );

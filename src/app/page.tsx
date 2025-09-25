@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
+import LogoSwitcher from '@/components/LogoSwitcher';
+ 
 
 type PageContent = {
   title: string;
@@ -16,6 +18,7 @@ type PageContent = {
 
 type Settings = {
   logo?: string;
+  logo_blk?: string;
   footer_write?: string;
   footer_head?: string;
   email?: string[];
@@ -32,7 +35,7 @@ export default async function Home() {
     .single();
   const { data: settings } = await supabase
     .from('settings')
-    .select('logo, footer_write, footer_head, email, phone')
+    .select('logo, logo_blk, footer_write, footer_head, email, phone')
     .single();
 
   const pageContent: PageContent = page || {
@@ -51,15 +54,15 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="bg-primary text-primary-foreground py-16 text-center">
         <div className="container mx-auto">
-          {settingsContent.logo && (
+          {(settingsContent.logo || settingsContent.logo_blk) && (
             <div className="mx-auto mb-4 h-16 w-auto relative" style={{ inlineSize: 'fit-content' }}>
-              <Image
-                src={settingsContent.logo}
-                alt="Annhurst Logo"
+              <LogoSwitcher
+                logo={settingsContent.logo}
+                logo_blk={settingsContent.logo_blk}
                 width={256}
                 height={64}
+                alt="Annhurst Logo"
                 className="h-16 w-auto"
-                priority
               />
             </div>
           )}
