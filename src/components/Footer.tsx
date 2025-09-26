@@ -1,0 +1,131 @@
+'use client'
+import Link from 'next/link';
+import { Phone, Mail, MapPin } from 'lucide-react'
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase/client';
+
+export default function Footer() {
+  const [settings, setSettings] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const { data, error } = await supabase.from("settings").select("*").single();
+      if (!error) setSettings(data);
+    };
+    fetchSettings();
+  }, []);
+
+  if (!settings) {
+    return (
+      <footer className="bg-gray-900 text-white playfair-display p-8 text-center">
+        <p>Loading footer...</p>
+      </footer>
+    );
+  }
+
+  const logoUrl = settings.logo_blk
+    ? supabase.storage.from("receipts").getPublicUrl(settings.logo_blk).data.publicUrl
+    : "/logo/logo.png"; // fallback
+
+
+  return (
+    <footer className="bg-gray-900 text-white playfair-display">
+      <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Company Info */}
+          <div className="col-span-1 md:col-span-2">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-25 h-25 rounded-lg flex items-center justify-center">
+                <img src={logoUrl} alt="Annhurst Transport" className="h-20 w-auto" />
+              </div>
+            </div>
+            <p className="text-gray-300 mb-4 max-w-md">
+              {settings.footer_write ||
+                "Your trusted partner in bus higher purchase solutions."}
+            </p>
+            <div className="space-y-2 text-sm text-gray-300">
+              {settings.phone?.map((ph: string, i: number) => (
+                <div key={i} className="flex items-center space-x-2">
+                  <Phone className="w-4 h-4" />
+                  <span>{ph}</span>
+                </div>
+              ))}
+              {settings.email?.map((em: string, i: number) => (
+                <div key={i} className="flex items-center space-x-2">
+                  <Mail className="w-4 h-4" />
+                  <span>{em}</span>
+                </div>
+              ))}
+              {settings.address && (
+                <div className="flex items-center space-x-2">
+                  <MapPin className="w-4 h-4" />
+                  <span>{settings.address}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">
+              {settings.footer_head || "Quick Links"}
+            </h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/" className="text-gray-300 hover:text-white transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/services" className="text-gray-300 hover:text-white transition-colors">
+                  Services
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">
+              {settings.footer_head2 || "Services"}
+            </h3>
+            <ul className="space-y-2 text-gray-300">
+              {settings.services?.map((srv: string, i: number) => (
+                <li key={i}>{srv}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-8 pt-8 border-t border-gray-800">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p className="text-gray-300 text-sm">
+              © {new Date().getFullYear()} {settings.bottom_left || "Company"}
+            </p>
+            <div className="flex space-x-6 mt-4 md:mt-0">
+              {settings.bottom_right?.map((link: string, i: number) => (
+                <Link
+                  key={i}
+                  href="/terms"
+                  className="text-gray-300 hover:text-white text-sm transition-colors"
+                >
+                  {link}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+} 
