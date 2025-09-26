@@ -27,7 +27,7 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)  
   const router = useRouter();
-  const [settings, setSettings] = useState<any>(null);
+  const [settings, setSettings] = useState<Settings | null>(null);
   const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
@@ -68,15 +68,16 @@ export default function Login() {
         setError('No role assigned to this user')
         setIsLoading(false)
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as Error;
       toast(
         <div>
           <strong>Login failed</strong>
-          <div>{err?.message || "Unexpected error. Please try again."}</div>
+          <div>{error?.message || "Unexpected error. Please try again."}</div>
         </div>,
         { className: "destructive" }
       )
-      setError(err?.message || 'Unexpected error')
+      setError(error?.message || 'Unexpected error')
     } finally {
       setIsLoading(false)
     }

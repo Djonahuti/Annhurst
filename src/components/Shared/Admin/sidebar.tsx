@@ -34,7 +34,7 @@ const navigation = [
 
 export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
     const pathname = usePathname();
-    const [settings, setSettings] = useState<any>(null);
+    const [settings, setSettings] = useState<Settings | null>(null);
   
     useEffect(() => {
       const fetchSettings = async () => {

@@ -359,8 +359,8 @@ export default function ContactPage() {
                   What documents do I need to apply for bus financing?
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  You'll need your business registration documents, financial statements, 
-                  driver's license, and proof of income. Our team will provide a complete 
+                  You&apos;ll need your business registration documents, financial statements, 
+                  driver&apos;s license, and proof of income. Our team will provide a complete 
                   checklist during your initial consultation.
                 </p>
               </div>

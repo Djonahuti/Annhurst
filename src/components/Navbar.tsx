@@ -27,7 +27,7 @@ type Settings = {
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname();
-  const [settings, setSettings] = useState<any>(null);
+  const [settings, setSettings] = useState<Settings | null>(null);
 
   useEffect(() => {
     const fetchSettings = async () => {

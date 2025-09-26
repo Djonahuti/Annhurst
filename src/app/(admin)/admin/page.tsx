@@ -33,7 +33,14 @@ export default function AdminDashboard() {
     totalRevenue: 0,
     totalBuses: 0
   })
-  const [recentPages, setRecentPages] = useState<any[]>([])
+  const [recentPages, setRecentPages] = useState<Array<{
+    id: string;
+    title: string;
+    slug: string;
+    status: string;
+    lastModified: string;
+    views: number;
+  }>>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {

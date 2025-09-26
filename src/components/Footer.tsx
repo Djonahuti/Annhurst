@@ -3,9 +3,24 @@ import Link from 'next/link';
 import { Phone, Mail, MapPin } from 'lucide-react'
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import Image from 'next/image';
+
+type Settings = {
+  logo?: string;
+  logo_blk?: string;
+  footer_write?: string;
+  footer_head?: string;
+  email?: string[];
+  phone?: string[];
+  address?: string;
+  footer_head2?: string;
+  services?: string[];
+  bottom_right?: string[];
+  bottom_left?: string;
+};
 
 export default function Footer() {
-  const [settings, setSettings] = useState<any>(null);
+  const [settings, setSettings] = useState<Settings | null>(null);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -36,7 +51,7 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-25 h-25 rounded-lg flex items-center justify-center">
-                <img src={logoUrl} alt="Annhurst Transport" className="h-20 w-auto" />
+                <Image src={logoUrl} width={256} height={64} alt="Annhurst Transport" className="h-20 w-auto" />
               </div>
             </div>
             <p className="text-gray-300 mb-4 max-w-md">

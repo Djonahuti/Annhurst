@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -29,7 +29,7 @@ export default async function AuthLayout({ children }: { children: ReactNode }) 
         <CardContent>{children}</CardContent>
         <CardFooter className="text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            You Have a Bus, but don't have Login Credentials?{' '}
+            You Have a Bus, but don&apos;t have Login Credentials?{' '}
             <Link href="/contact" className="text-primary hover:underline">
               Contact your coordinator
             </Link>

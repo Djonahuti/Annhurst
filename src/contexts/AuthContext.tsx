@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
 import { User } from '@supabase/supabase-js'
 import { useSupabase } from './SupabaseContext'
 
@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null
   loading: boolean
   role: 'driver' | 'admin' | 'coordinator' | null
-  signIn: (email: string, password: string) => Promise<{ error: any, role?: string | null }>
+  signIn: (email: string, password: string) => Promise<{ error: Error | null, role?: string | null }>
   signOut: () => Promise<void>
 }
 
@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [role, setRole] = useState<'driver' | 'admin' | 'coordinator' | null>(null)
 
-  const fetchUserRole = async (email: string) => {
+  const fetchUserRole = useCallback(async (email: string) => {
     try {
       // Check role tables and banned status
       let foundRole: 'driver' | 'admin' | 'coordinator' | undefined = undefined
@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Error fetching user role:', error)
     }
-  }
+  }, [supabase])
 
   useEffect(() => {
     // Get initial session
@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase])
+  }, [supabase, fetchUserRole])
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
