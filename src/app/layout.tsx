@@ -1,13 +1,17 @@
 export const dynamic = 'force-dynamic'
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Playfair_Display } from 'next/font/google'
 import { cn } from '@/lib/utils'
 import { ThemeProvider } from '@/components/Shared/theme-provider'
 import { SupabaseProvider } from '@/contexts/SupabaseContext'
 import { AuthProvider } from '@/contexts/AuthContext'
 
 const inter = Inter({ subsets: ['latin'] })
+const playfairDisplay = Playfair_Display({ 
+  subsets: ['latin'],
+  variable: '--font-playfair-display'
+})
 
 export const metadata: Metadata = {
   title: 'Annhurst Transport Limited',
@@ -22,7 +26,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn(inter.className, "bg-background text-foreground")}>
+      <body className={cn(inter.className, playfairDisplay.variable, "bg-background text-foreground")}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <SupabaseProvider>
             <AuthProvider>
