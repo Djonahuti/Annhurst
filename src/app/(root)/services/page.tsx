@@ -345,7 +345,7 @@ export default function ServicesPage() {
                 </Button>
               </Link>
               <Link href="/about">
-                <Button variant="ghost" size="lg" className="border-2 border-white text-gray-200 hover:bg-white hover:text-primary hover:border-none transform transition duration-300 ease-in-out hover:scale-105">
+                <Button variant="ghost" size="lg" className="border-2 border-white text-gray-200 hover:bg-gray-200 hover:text-primary hover:border-none transform transition duration-300 ease-in-out hover:scale-105">
                   {page.hero_secondary_button}
                 </Button>
               </Link>
