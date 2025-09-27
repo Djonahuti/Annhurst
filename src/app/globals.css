@@ -126,7 +126,7 @@
     font-family: 'Inter', sans-serif;
   }
   .playfair-display {
-    font-family: var(--font-playfair), serif;
+    font-family: 'Playfair Display', serif;
   }        
   .hero-gradient {
       background: linear-gradient(135deg, #b5121b 80%, #8f0e15 20%);
