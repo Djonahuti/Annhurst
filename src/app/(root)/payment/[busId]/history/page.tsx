@@ -1,0 +1,146 @@
+'use client'
+// src/pages/payment/PaymentHistory.tsx
+import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSupabase } from "@/contexts/SupabaseContext";
+
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useParams, useRouter } from "next/navigation";
+
+interface Payment {
+  id: number;
+  created_at: string;
+  week: string | null;
+  coordinator: string | null;
+  bus: number | null;
+  p_week: string | null;
+  receipt: string | null;
+  amount: number | null;
+  sender: string | null;
+  payment_day: string | null;
+  payment_date: string | null;
+  pay_type: string | null;
+  pay_complete: boolean | null;
+  issue: string | null;
+  inspection: boolean | null;
+}
+
+export default function PaymentHistory() {
+  const { busId } = useParams<{ busId: string }>();
+  const { user, role } = useAuth();
+  const { supabase } = useSupabase();
+  const router = useRouter();
+
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user || (role !== "coordinator" && role !== "driver")) {
+      router.push("/login");
+      return;
+    }
+
+    const fetchPayments = async () => {
+      const { data, error } = await supabase
+        .from("payment")
+        .select("*")
+        .eq("bus", busId)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching payments:", error);
+        setPayments([]);
+      } else {
+        setPayments(data as Payment[]);
+      }
+      setLoading(false);
+    };
+
+    fetchPayments();
+  }, [user, role, supabase, busId]);
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto py-12">
+        <Skeleton className="h-8 w-1/3 mb-6" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-5xl mx-auto py-12">
+      <Card>
+        <CardHeader>
+          <CardTitle>Payment History (Bus #{busId})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {payments.length === 0 ? (
+            <p>No payments recorded yet.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Sender</TableHead>
+                  <TableHead>Receipt</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Inspection</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {payments.map((p) => (
+                  <TableRow key={p.id}>
+                    <TableCell>
+                      {p.payment_date || p.created_at.split("T")[0]}
+                    </TableCell>
+                    <TableCell>{p.amount ?? 0}</TableCell>
+                    <TableCell>{p.pay_type ?? "-"}</TableCell>
+                    <TableCell>{p.sender ?? "-"}</TableCell>
+                    <TableCell>{p.receipt ?? "-"}</TableCell>
+                    <TableCell>
+                      {p.pay_complete ? (
+                        <span className="text-green-600 font-medium">Complete</span>
+                      ) : (
+                        <span className="text-red-600 font-medium">Pending</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {p.inspection ? "✔️" : "❌"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <Button variant="outline" onClick={() => router.back()}>
+            Back
+          </Button>
+          <Button onClick={() => router.push(`/payment/${busId}`)}>
+            Add New Payment
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+}
