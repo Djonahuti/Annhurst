@@ -54,7 +54,7 @@ export default function PaymentForm() {
   const [busCode, setBusCode] = useState<string>("");  
 
   const form = useForm<PaymentFormValues>({
-    resolver: zodResolver(paymentSchema) as any, // Temporary cast to avoid resolver type mismatch
+    resolver: zodResolver(paymentSchema) as unknown as import('react-hook-form').Resolver<PaymentFormValues>,
     defaultValues: {
       week: "",
       completed_by: undefined,
