@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSupabase } from "@/contexts/SupabaseContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { z } from "zod";
@@ -35,6 +35,24 @@ interface Driver {
   plate_no: string | null;
   coordinator_id: number | null;
   coordinator_name: string | null;
+}
+
+interface DriverQueryRow {
+  id: number;
+  name: string | null;
+  email: string | null;
+  phone: string[] | null;
+  address: string[] | null;
+  buses?: {
+    id: number;
+    bus_code: string;
+    plate_no: string;
+    coordinators?: {
+      id: number;
+      name: string;
+      email: string;
+    }[];
+  }[];
 }
 
 interface Bus {
@@ -78,17 +96,7 @@ export default function AdminDrivers() {
     defaultValues: { name: "", email: "", phone: "", address: "", bus_id: "", coordinator_id: "" },
   });
 
-  useEffect(() => {
-    if (!user || role !== "admin") {
-      router.push("/login");
-      return;
-    }
-    fetchDrivers();
-    fetchBuses();
-    fetchCoordinators();
-  }, [user, role]);
-
-  const fetchDrivers = async () => {
+  const fetchDrivers = useCallback(async () => {
     const { data, error } = await supabase
       .from("driver")
       .select(`
@@ -104,7 +112,7 @@ export default function AdminDrivers() {
       return;
     }
 
-    const formatted = (data || []).map((d: any) => ({
+    const formatted = (data || []).map((d: DriverQueryRow) => ({
       id: d.id,
       name: d.name,
       email: d.email,
@@ -113,29 +121,39 @@ export default function AdminDrivers() {
       bus_id: d.buses?.[0]?.id || null,
       bus_code: d.buses?.[0]?.bus_code || null,
       plate_no: d.buses?.[0]?.plate_no || null,
-      coordinator_id: d.buses?.[0]?.coordinators?.id || null,
-      coordinator_name: d.buses?.[0]?.coordinators?.name || null,
+      coordinator_id: d.buses?.[0]?.coordinators?.[0]?.id || null,
+      coordinator_name: d.buses?.[0]?.coordinators?.[0]?.name || null,
     }));
 
     setDrivers(sortDrivers(formatted, sortBy));
     setLoading(false);
-  };
+  }, [supabase, sortBy]);
 
-  const fetchBuses = async () => {
+  const fetchBuses = useCallback(async () => {
     const { data, error } = await supabase
       .from("buses")
       .select("id, bus_code, plate_no, driver, coordinator");
     if (error) console.error("Error fetching buses:", error);
     setBuses(data || []);
-  };
+  }, [supabase]);
 
-  const fetchCoordinators = async () => {
+  const fetchCoordinators = useCallback(async () => {
     const { data, error } = await supabase
       .from("coordinators")
       .select("id, name, email");
     if (error) console.error("Error fetching coordinators:", error);
     setCoordinators(data || []);
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    if (!user || role !== "admin") {
+      router.push("/login");
+      return;
+    }
+    fetchDrivers();
+    fetchBuses();
+    fetchCoordinators();
+  }, [user, role, router, fetchDrivers, fetchBuses, fetchCoordinators]);
 
   const handleEdit = (driver: Driver) => {
     setEditingDriver(driver);

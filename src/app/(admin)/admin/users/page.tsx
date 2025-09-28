@@ -1,32 +1,49 @@
 'use client'
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSupabase } from "@/contexts/SupabaseContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { useRouter } from "next/navigation";
 
+interface Driver {
+  id: number;
+  name: string;
+  email: string;
+  phone: string | string[];
+  address: string | string[];
+  kyc: boolean;
+  banned: boolean;
+}
+
+interface Coordinator {
+  id: number;
+  name: string;
+  email: string;
+  phone: string | string[];
+  banned: boolean;
+}
+
+interface Admin {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  banned: boolean;
+}
 
 export default function ViewUsers() {
   const { supabase } = useSupabase();
   const { user, role } = useAuth();
   const router = useRouter();
 
-  const [drivers, setDrivers] = useState<any[]>([]);
-  const [coordinators, setCoordinators] = useState<any[]>([]);
-  const [admins, setAdmins] = useState<any[]>([]);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [coordinators, setCoordinators] = useState<Coordinator[]>([]);
+  const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(true);
   const [banLoading, setBanLoading] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!user || role !== "admin") {
-      router.push("/login");
-      return;
-    }
-    fetchAllUsers();
-  }, [user, role, supabase]);
-
-  const fetchAllUsers = async () => {
+  const fetchAllUsers = useCallback(async () => {
     setLoading(true);
     const { data: driverData } = await supabase.from("driver").select("id, name, email, phone, address, kyc, banned");
     const { data: coordinatorData } = await supabase.from("coordinators").select("id, name, email, phone, banned");
@@ -35,7 +52,15 @@ export default function ViewUsers() {
     setCoordinators(coordinatorData || []);
     setAdmins(adminData || []);
     setLoading(false);
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    if (!user || role !== "admin") {
+      router.push("/login");
+      return;
+    }
+    fetchAllUsers();
+  }, [user, role, router, fetchAllUsers]);
 
   const handleBanToggle = async (table: string, id: string | number, banned: boolean) => {
     setBanLoading(`${table}-${id}`);

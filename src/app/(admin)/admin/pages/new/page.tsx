@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -50,18 +50,18 @@ export default function PageEdit() {
   const router = useRouter();
   const [formData, setFormData] = useState<PageFormData>({})
 
-  useEffect(() => {
-    if (id && id !== 'new') fetchPage()
-  }, [id])
-
-  const fetchPage = async () => {
+  const fetchPage = useCallback(async () => {
     const { data, error } = await supabase.from('pages').select('*').eq('id', id).single()
     if (error) {
       toast.error("Error fetching page")
     } else if (data) {
       setFormData(data)
     }
-  }
+  }, [id, supabase])
+
+  useEffect(() => {
+    if (id && id !== 'new') fetchPage()
+  }, [id, fetchPage])
 
   const handleSave = async () => {
     if (id === 'new') {
