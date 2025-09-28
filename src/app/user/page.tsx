@@ -1,168 +1,208 @@
-'use client';
+'use client'
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSupabase } from '@/contexts/SupabaseContext';
+import { Mail, SendHorizontal } from 'lucide-react';
+import Modal from '@/components/Modal';
+import Contact from '@/components/Shared/Contact';
+import Link from "next/link";
+import { useRouter } from 'next/navigation';
 
-// Define a type for your bus data to fix the useState error
-type Bus = {
-  id: string;
-  bus_code: string;
-  plate_no: string;
-  driver: {
-    name: string;
-  }[];
-};
 
-type DriverRow = {
-  name: string | null;
-};
+interface Bus {
+  id: number;
+  bus_code: string | null;
+  plate_no: string | null;
+  driver_name: string | null;
+}
 
-type BusQueryRow = {
-  id: string | number;
-  bus_code: string | number;
-  plate_no: string | number;
-  driver: DriverRow[] | null;
-};
+interface SupabaseBus {
+  id: number;
+  bus_code: string | null;
+  plate_no: string | null;
+  driver?: { name: string | null } | null;
+}
 
-const paymentSchema = z.object({
-  bus: z.string(),
-  amount: z.number().min(1),
-  payment_date: z.string(),
-  pay_type: z.string(),
-  pay_complete: z.boolean(),
-});
+interface Coordinator {
+  id: number;
+  name: string;
+  email: string;
+  phone: string[] | null;
+}
 
-export default function CoordinatorDashboard() {
-  const [buses, setBuses] = useState<Bus[]>([]);
-  const form = useForm<z.infer<typeof paymentSchema>>({
-    resolver: zodResolver(paymentSchema),
-    defaultValues: { bus: '', amount: 0, payment_date: '', pay_type: '', pay_complete: false },
-  });
+export default function UserProfile() {
+  const router = useRouter();
+  const { user, role, loading: authLoading, signOut } = useAuth()
+  const { supabase } = useSupabase()
+
+  const [buses, setBuses] = useState<Bus[]>([])
+  const [loading, setLoading] = useState(true)
+  const [coordinator, setCoordinator] = useState<Coordinator | null>(null)
+  const [isContactModalOpen, setContactModalOpen] = useState(false);
+  const [selectedDriverId, setSelectedDriverId] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchBuses = async () => {
-      // Correctly await the user data
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (user) {
-        const { data, error } = await supabase
-          .from('buses')
-          .select('id, bus_code, plate_no, driver(name)')
-          .eq('coordinator', user.id);
-
-        if (error) {
-          console.error("Error fetching buses:", error);
-        } else {
-          const normalized: Bus[] = (data ?? []).map((item: BusQueryRow) => ({
-            id: String(item.id),
-            bus_code: String(item.bus_code),
-            plate_no: String(item.plate_no),
-            driver: Array.isArray(item.driver)
-              ? item.driver.map((d: DriverRow) => ({ name: String(d?.name ?? '') }))
-              : [],
-          }));
-          setBuses(normalized);
-        }
+    const fetchCoordinatorAndBuses = async () => {
+      if (!authLoading && (!user || role !== 'coordinator')) {
+        router.push('/login')
+        return
       }
-    };
 
-    fetchBuses();
-  }, []);
+      if (authLoading) {
+        return // Wait for auth to finish loading
+      }
 
-  const onSubmit = async (data: z.infer<typeof paymentSchema>) => {
-    await supabase.from('payment').insert({
-      bus: data.bus,
-      amount: data.amount,
-      payment_date: data.payment_date,
-      pay_type: data.pay_type,
-      pay_complete: data.pay_complete,
-    });
-    form.reset();
-  };
+      // Find coordinator record by email
+      const { data: coData, error: coError } = await supabase
+        .from('coordinators')
+        .select('*')
+        .eq('email', user?.email ?? '')
+        .single()
+
+      if (coError || !coData) {
+        console.error('Coordinator not found:', coError)
+        router.push('/login')
+        return
+      }
+      setCoordinator(coData)
+
+      // Fetch buses related to this coordinator
+      const { data: busesData, error: busError } = await supabase
+        .from('buses')
+        .select(`
+          id,
+          bus_code,
+          plate_no,
+          driver:driver(name)
+        `)
+        .eq('coordinator', coData.id)
+
+      if (busError) {
+        console.error('Error fetching buses:', busError)
+        setBuses([])
+      } else {
+        const formattedBuses = (busesData as Array<{
+          id: number;
+          bus_code: string | null;
+          plate_no: string | null;
+          driver: Array<{ name: string | null }>;
+        }>).map((bus) => ({
+          id: bus.id,
+          bus_code: bus.bus_code,
+          plate_no: bus.plate_no,
+          driver_name: Array.isArray(bus.driver) && bus.driver.length > 0 ? bus.driver[0].name || 'N/A' : 'N/A',
+        }))
+        setBuses(formattedBuses)
+      }
+
+      setLoading(false)
+    }
+
+    fetchCoordinatorAndBuses()
+  }, [user, role, authLoading, supabase])
+
+  const handleLogout = async () => {
+    await signOut()
+    router.push('/login')
+  }
+
+  if (authLoading || loading) {
+    return (
+      <div className="max-w-4xl mx-auto py-12">
+        <Skeleton className="h-8 w-1/3 mb-6" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
 
   return (
-    <div className="p-8 space-y-8">
-      <Card>
+    <div className="max-w-4xl mx-auto py-12">
+      <h2 className="text-2xl font-bold mb-6">Coordinator Profile</h2>
+      <Card className="mb-8">
         <CardHeader>
-          <CardTitle>Assigned Buses</CardTitle>
+          <CardTitle>
+            Welcome, {coordinator?.name || user?.email}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Bus Code</TableHead>
-                <TableHead>Plate No</TableHead>
-                <TableHead>Driver</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {buses.map((bus) => (
-                <TableRow key={bus.id}>
-                  <TableCell>{bus.bus_code}</TableCell>
-                  <TableCell>{bus.plate_no}</TableCell>
-                  <TableCell>{bus.driver?.[0]?.name}</TableCell>
+          <p>Role: Coordinator</p>
+          <p>Email: {coordinator?.email}</p>
+          {coordinator?.phone && <p>Phone: {coordinator.phone.join(', ')}</p>}
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <Link href="/my-inbox" className="mr-auto">
+            <Button className="bg-gradient-to-r from-gray-600 to-primary-light text-gray-200 hover:from-primary-dark hover:to-primary-dark transform transition duration-300 ease-in-out hover:scale-105">
+              <Mail />Inbox
+            </Button>
+          </Link>
+          <Button onClick={handleLogout} className='text-gray-200'>
+            Logout
+          </Button>
+        </CardFooter>        
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Buses Under Your Coordination</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {buses.length === 0 ? (
+            <p>No buses assigned to you.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Bus Code</TableHead>
+                  <TableHead>Plate Number</TableHead>
+                  <TableHead>Driver Name</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {buses.map((bus) => (
+                  <TableRow key={bus.id}>
+                    <TableCell>{bus.bus_code || 'N/A'}</TableCell>
+                    <TableCell>{bus.plate_no || 'N/A'}</TableCell>
+                    <TableCell>{bus.driver_name}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/payment/${bus.id}`)}
+                      >
+                        Post Payment
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/payment/${bus.id}/history`)}
+                      >
+                        View Payments
+                      </Button>
+                      <Button
+                       className='mt-2 ml-auto block text-gray-200'
+                       onClick={() => {
+                         setSelectedDriverId(bus.driver_name !== 'N/A' ? bus.id : null);
+                         setContactModalOpen(true);
+                       }}
+                      >
+                       <SendHorizontal />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Add Payment</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="bus"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Bus ID</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Amount</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="payment_date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Payment Date</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button type="submit">Add Payment</Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+      {/* Contact Modal */}
+      <Modal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)}>
+        <Contact driverId={selectedDriverId} />
+      </Modal>    
     </div>
-  );
+  )
 }
