@@ -93,25 +93,27 @@ export default function PaymentForm() {
       return;
     }
 
-    // ✅ Generate filename
+    // Generate filename
     const ext = file.name.split(".").pop();
     const formattedDate = values.payment_date.split("-").reverse().join(".");
     const newFileName = `${busCode},N${values.amount},${formattedDate},DR Receipt.${ext}`;
 
-    // ✅ Upload to Supabase Storage bucket "receipts"
-    const { error: uploadError } = await supabase.storage
-      .from("receipts")
-      .upload(newFileName, file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
+    // Upload to local API route
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("filename", newFileName);
 
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
+    const uploadRes = await fetch("/api/upload-receipt", {
+      method: "POST",
+      body: formData,
+    });
+    const uploadJson = await uploadRes.json();
+    if (!uploadRes.ok) {
+      alert("Failed to upload receipt");
       return;
     }
 
-    // ✅ Insert payment record (store only filename)
+    // Insert payment record (store only filename)
     const { error: insertError } = await supabase.from("payment").insert([
       {
         ...values,
