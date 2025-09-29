@@ -50,6 +50,7 @@ export default function PaymentHistory() {
   const [showModal, setShowModal] = useState(false);
   const [supabaseUrls, setSupabaseUrls] = useState<Record<string, string>>({});
   const { busId } = useParams<{ busId: string }>();
+  const [busCode, setBusCode] = useState<string>("");
   const { user, role } = useAuth();
   const { supabase } = useSupabase();
   const router = useRouter();
@@ -64,9 +65,21 @@ export default function PaymentHistory() {
       return;
     }
 
-    const fetchPaymentsAndReceipts = async () => {
+  const fetchPaymentsAndReceipts = async () => {
       setLoading(true);
       setReceiptsLoading(true);
+      // Fetch bus_code from buses table
+      const { data: busData, error: busError } = await supabase
+        .from("buses")
+        .select("bus_code")
+        .eq("id", busId)
+        .single();
+      if (!busError && busData && busData.bus_code) {
+        setBusCode(busData.bus_code);
+      } else {
+        setBusCode("");
+      }
+
       const { data, error } = await supabase
         .from("payment")
         .select("*")
@@ -112,7 +125,7 @@ export default function PaymentHistory() {
     <div className="max-w-5xl mx-auto py-12">
       <Card>
         <CardHeader>
-          <CardTitle>Payment History (Bus #{busId})</CardTitle>
+          <CardTitle className="flex justify-between">{busCode ? `${busCode}` : `#${busId}`} <span className="text-secondary-foreground text-sm">Payment History</span></CardTitle>
         </CardHeader>
         <CardContent>
           {payments.length === 0 ? (
@@ -134,7 +147,9 @@ export default function PaymentHistory() {
                 {payments.map((p) => {
                   const localUrl = p.receipt ? `/receipts/dr/${encodeURIComponent(p.receipt)}` : null;
                   const supabaseUrl = p.receipt ? supabaseUrls[p.receipt] : null;
+                  // Only use supabaseUrl if it looks valid (not empty, not just the bucket root)
                   const isSupabaseValid = supabaseUrl && supabaseUrl !== "" && !supabaseUrl.endsWith("/receipts/");
+                  // Always show both preview options if available
                   return (
                     <TableRow key={p.id}>
                       <TableCell>
@@ -144,57 +159,36 @@ export default function PaymentHistory() {
                       <TableCell>{p.pay_type ?? "-"}</TableCell>
                       <TableCell>{p.sender ?? "-"}</TableCell>
                       <TableCell>
-                        <div className="flex flex-col gap-2">
-                          {isSupabaseValid && (
-                            <div className="border rounded p-2">
-                              <div className="font-semibold mb-1">Link 1</div>
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="ghost"
-                                  className="p-0 text-primary underline"
-                                  onClick={() => {
-                                    setPreviewUrl(supabaseUrl);
-                                    setShowModal(true);
-                                  }}
-                                >
-                                  <Eye />
-                                </Button>
-                                <a
-                                  href={supabaseUrl}
-                                  download
-                                  className="text-primary underline"
-                                >
-                                  <Download />
-                                </a>
-                              </div>
-                            </div>
-                          )}
-                          {localUrl && (
-                            <div className="border rounded p-2">
-                              <div className="font-semibold mb-1">Link 2</div>
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="ghost"
-                                  className="p-0 text-primary underline"
-                                  onClick={() => {
-                                    setPreviewUrl(localUrl);
-                                    setShowModal(true);
-                                  }}
-                                >
-                                  <Eye />
-                                </Button>
-                                <a
-                                  href={localUrl}
-                                  download
-                                  className="text-primary underline"
-                                >
-                                  <Download />
-                                </a>
-                              </div>
-                            </div>
-                          )}
-                          {!isSupabaseValid && !localUrl && "-"}
-                        </div>
+                        {(isSupabaseValid || localUrl) ? (
+                          <div className="flex items-center">
+                            {isSupabaseValid && (
+                              <Button
+                                variant="ghost"
+                                className="p-0 text-primary underline"
+                                onClick={() => {
+                                  setPreviewUrl(supabaseUrl);
+                                  setShowModal(true);
+                                }}
+                              >
+                                <Eye />
+                              </Button>
+                            )}
+                            {localUrl && (
+                              <Button
+                                variant="ghost"
+                                className="p-0 text-primary underline ml-2"
+                                onClick={() => {
+                                  setPreviewUrl(localUrl);
+                                  setShowModal(true);
+                                }}
+                              >
+                                <Download />
+                              </Button>
+                            )}
+                          </div>
+                        ) : (
+                          "-"
+                        )}
                       </TableCell>
                       <TableCell>
                         {p.pay_complete ? (
