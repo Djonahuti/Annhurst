@@ -18,6 +18,7 @@ export async function POST(req: Request) {
   const savePath = path.join(process.cwd(), "public", "receipts", "dr", filename.toString());
 
   try {
+    // Overwrite if file exists
     await fs.writeFile(savePath, buffer);
     return NextResponse.json({ filename });
   } catch (err) {
