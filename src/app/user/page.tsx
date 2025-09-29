@@ -20,13 +20,6 @@ interface Bus {
   driver_name: string | null;
 }
 
-interface SupabaseBus {
-  id: number;
-  bus_code: string | null;
-  plate_no: string | null;
-  driver?: { name: string | null } | null;
-}
-
 interface Coordinator {
   id: number;
   name: string;
@@ -77,7 +70,7 @@ export default function UserProfile() {
           id,
           bus_code,
           plate_no,
-          driver:driver(name)
+          driver:driver(id, name)
         `)
         .eq('coordinator', coData.id)
 
@@ -85,18 +78,25 @@ export default function UserProfile() {
         console.error('Error fetching buses:', busError)
         setBuses([])
       } else {
-        const formattedBuses = (busesData as Array<{
-          id: number;
-          bus_code: string | null;
-          plate_no: string | null;
-          driver: Array<{ name: string | null }>;
-        }>).map((bus) => ({
-          id: bus.id,
-          bus_code: bus.bus_code,
-          plate_no: bus.plate_no,
-          driver_name: Array.isArray(bus.driver) && bus.driver.length > 0 ? bus.driver[0].name || 'N/A' : 'N/A',
-        }))
-        setBuses(formattedBuses)
+        // Use Array<any> for mapping, output Bus[] for Vercel compatibility
+        const formattedBuses: Bus[] = (busesData as Array<any>).map((bus) => {
+          let driverObj: { id?: number; name?: string } | null = null;
+          if (Array.isArray(bus.driver)) {
+            driverObj = bus.driver[0] ?? null;
+          } else if (bus.driver && typeof bus.driver === 'object') {
+            driverObj = bus.driver;
+          }
+
+          const driverName = driverObj && driverObj.name ? `${driverObj.name}` : 'N/A';
+
+          return {
+            id: Number(bus.id),
+            bus_code: bus.bus_code ?? null,
+            plate_no: bus.plate_no ?? null,
+            driver_name: driverName,
+          };
+        });
+        setBuses(formattedBuses);
       }
 
       setLoading(false)
@@ -166,7 +166,7 @@ export default function UserProfile() {
                   <TableRow key={bus.id}>
                     <TableCell>{bus.bus_code || 'N/A'}</TableCell>
                     <TableCell>{bus.plate_no || 'N/A'}</TableCell>
-                    <TableCell>{bus.driver_name}</TableCell>
+                    <TableCell>{bus.driver_name || 'N/A'}</TableCell>
                     <TableCell>
                       <Button
                         variant="outline"
