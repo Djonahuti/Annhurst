@@ -56,26 +56,17 @@ export default function PaymentHistory() {
 
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [receiptsLoading, setReceiptsLoading] = useState(false);
 
   useEffect(() => {
-    // Preload Supabase public URLs for receipts
-    const fetchSupabaseUrls = async () => {
-      const urls: Record<string, string> = {};
-      for (const p of payments) {
-        if (p.receipt) {
-          const { data } = supabase.storage.from("receipts").getPublicUrl(p.receipt);
-          urls[p.receipt] = data?.publicUrl || "";
-        }
-      }
-      setSupabaseUrls(urls);
-    };
-    if (payments.length > 0) fetchSupabaseUrls();
     if (!user || (role !== "coordinator" && role !== "driver")) {
       router.push("/login");
       return;
     }
 
-    const fetchPayments = async () => {
+    const fetchPaymentsAndReceipts = async () => {
+      setLoading(true);
+      setReceiptsLoading(true);
       const { data, error } = await supabase
         .from("payment")
         .select("*")
@@ -85,20 +76,34 @@ export default function PaymentHistory() {
       if (error) {
         console.error("Error fetching payments:", error);
         setPayments([]);
-      } else {
-        setPayments(data as Payment[]);
+        setLoading(false);
+        setReceiptsLoading(false);
+        return;
       }
+      setPayments(data as Payment[]);
       setLoading(false);
+
+      // Preload Supabase public URLs for receipts
+      const urls: Record<string, string> = {};
+      for (const p of data as Payment[]) {
+        if (p.receipt) {
+          const { data: urlData } = supabase.storage.from("receipts").getPublicUrl(p.receipt);
+          urls[p.receipt] = urlData?.publicUrl || "";
+        }
+      }
+      setSupabaseUrls(urls);
+      setReceiptsLoading(false);
     };
 
-    fetchPayments();
+    fetchPaymentsAndReceipts();
   }, [user, role, supabase, busId]);
 
-  if (loading) {
+  if (loading || receiptsLoading) {
     return (
       <div className="max-w-4xl mx-auto py-12">
         <Skeleton className="h-8 w-1/3 mb-6" />
         <Skeleton className="h-64 w-full" />
+        <div className="text-center text-gray-500 mt-4">Loading receipts...</div>
       </div>
     );
   }
