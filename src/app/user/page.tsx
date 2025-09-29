@@ -1,17 +1,25 @@
 'use client'
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useAuth } from '@/contexts/AuthContext';
-import { useSupabase } from '@/contexts/SupabaseContext';
-import { Mail, SendHorizontal } from 'lucide-react';
-import Modal from '@/components/Modal';
-import Contact from '@/components/Shared/Contact';
-import Link from "next/link";
-import { useRouter } from 'next/navigation';
 
+import Modal from "@/components/Modal";
+import Contact from "@/components/Shared/Contact";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSupabase } from "@/contexts/SupabaseContext";
+import { Mail, SendHorizontal } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+// Type for raw bus data from Supabase
+interface BusRaw {
+  id: number | string;
+  bus_code: string | null;
+  plate_no: string | null;
+  driver: { id?: number; name?: string } | { id?: number; name?: string }[] | null;
+}
 
 interface Bus {
   id: number;
@@ -78,19 +86,21 @@ export default function UserProfile() {
         console.error('Error fetching buses:', busError)
         setBuses([])
       } else {
-        // Use Array<any> for mapping, output Bus[] for Vercel compatibility
-        const formattedBuses: Bus[] = (busesData as Array<any>).map((bus) => {
+        // Use BusRaw type for mapping, output Bus[]
+        const formattedBuses: Bus[] = (busesData as BusRaw[]).map((bus) => {
           let driverObj: { id?: number; name?: string } | null = null;
           if (Array.isArray(bus.driver)) {
-            driverObj = bus.driver[0] ?? null;
+            driverObj = bus.driver.length > 0 ? bus.driver[0] : null;
           } else if (bus.driver && typeof bus.driver === 'object') {
             driverObj = bus.driver;
           }
 
-          const driverName = driverObj && driverObj.name ? `${driverObj.name}` : 'N/A';
+          const driverName = driverObj && typeof driverObj.name === 'string' && driverObj.name.length > 0
+            ? driverObj.name
+            : 'N/A';
 
           return {
-            id: Number(bus.id),
+            id: typeof bus.id === 'string' ? parseInt(bus.id, 10) : bus.id,
             bus_code: bus.bus_code ?? null,
             plate_no: bus.plate_no ?? null,
             driver_name: driverName,
@@ -205,4 +215,5 @@ export default function UserProfile() {
       </Modal>    
     </div>
   )
+
 }
