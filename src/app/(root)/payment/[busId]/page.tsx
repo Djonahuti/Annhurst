@@ -98,17 +98,31 @@ export default function PaymentForm() {
     const formattedDate = values.payment_date.split("-").reverse().join(".");
     const newFileName = `${busCode},N${values.amount},${formattedDate},DR Receipt.${ext}`;
 
-    // Upload to local API route
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("filename", newFileName);
+    let uploadSuccess = false;
+    // Use local storage in development, Supabase Storage in production
+    if (process.env.NODE_ENV === "development") {
+      // Upload to local API route
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("filename", newFileName);
 
-    const uploadRes = await fetch("/api/upload-receipt", {
-      method: "POST",
-      body: formData,
-    });
-    const uploadJson = await uploadRes.json();
-    if (!uploadRes.ok) {
+      const uploadRes = await fetch("/api/upload-receipt", {
+        method: "POST",
+        body: formData,
+      });
+      uploadSuccess = uploadRes.ok;
+    } else {
+      // Upload to Supabase Storage bucket "receipts"
+      const { error: uploadError } = await supabase.storage
+        .from("receipts")
+        .upload(newFileName, file, {
+          cacheControl: "3600",
+          upsert: true,
+        });
+      uploadSuccess = !uploadError;
+    }
+
+    if (!uploadSuccess) {
       alert("Failed to upload receipt");
       return;
     }

@@ -48,6 +48,7 @@ interface Payment {
 export default function PaymentHistory() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [supabaseUrls, setSupabaseUrls] = useState<Record<string, string>>({});
   const { busId } = useParams<{ busId: string }>();
   const { user, role } = useAuth();
   const { supabase } = useSupabase();
@@ -57,6 +58,18 @@ export default function PaymentHistory() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Preload Supabase public URLs for receipts
+    const fetchSupabaseUrls = async () => {
+      const urls: Record<string, string> = {};
+      for (const p of payments) {
+        if (p.receipt) {
+          const { data } = supabase.storage.from("receipts").getPublicUrl(p.receipt);
+          urls[p.receipt] = data?.publicUrl || "";
+        }
+      }
+      setSupabaseUrls(urls);
+    };
+    if (payments.length > 0) fetchSupabaseUrls();
     if (!user || (role !== "coordinator" && role !== "driver")) {
       router.push("/login");
       return;
@@ -114,7 +127,14 @@ export default function PaymentHistory() {
               </TableHeader>
               <TableBody>
                 {payments.map((p) => {
-                  const receiptUrl = p.receipt ? `/receipts/dr/${encodeURIComponent(p.receipt)}` : null;
+                  let localUrl = p.receipt ? `/receipts/dr/${encodeURIComponent(p.receipt)}` : null;
+                  let supabaseUrl = p.receipt ? supabaseUrls[p.receipt] : null;
+                  // For preview/download: try local first, else supabase
+                  let previewDownloadUrl = localUrl;
+                  // If running in production (Vercel), local files won't exist, so fallback to supabase
+                  if (typeof window !== "undefined" && window.location.hostname !== "localhost" && supabaseUrl) {
+                    previewDownloadUrl = supabaseUrl;
+                  }
                   return (
                     <TableRow key={p.id}>
                       <TableCell>
@@ -124,20 +144,20 @@ export default function PaymentHistory() {
                       <TableCell>{p.pay_type ?? "-"}</TableCell>
                       <TableCell>{p.sender ?? "-"}</TableCell>
                       <TableCell>
-                        {receiptUrl ? (
+                        {previewDownloadUrl ? (
                           <div className="flex items-center">
                             <Button
                               variant="ghost"
                               className="p-0 text-primary underline"
                               onClick={() => {
-                                setPreviewUrl(receiptUrl);
+                                setPreviewUrl(previewDownloadUrl);
                                 setShowModal(true);
                               }}
                             >
                               <Eye />
                             </Button>
                             <a
-                              href={receiptUrl}
+                              href={previewDownloadUrl}
                               download
                               className="ml-2 text-primary underline"
                             >
