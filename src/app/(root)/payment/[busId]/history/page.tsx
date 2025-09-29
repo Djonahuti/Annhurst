@@ -134,12 +134,7 @@ export default function PaymentHistory() {
                 {payments.map((p) => {
                   const localUrl = p.receipt ? `/receipts/dr/${encodeURIComponent(p.receipt)}` : null;
                   const supabaseUrl = p.receipt ? supabaseUrls[p.receipt] : null;
-                  // For preview/download: try local first, else supabase
-                  let previewDownloadUrl = localUrl;
-                  // If running in production (Vercel), local files won't exist, so fallback to supabase
-                  if (typeof window !== "undefined" && window.location.hostname !== "localhost" && supabaseUrl) {
-                    previewDownloadUrl = supabaseUrl;
-                  }
+                  const isSupabaseValid = supabaseUrl && supabaseUrl !== "" && !supabaseUrl.endsWith("/receipts/");
                   return (
                     <TableRow key={p.id}>
                       <TableCell>
@@ -149,29 +144,57 @@ export default function PaymentHistory() {
                       <TableCell>{p.pay_type ?? "-"}</TableCell>
                       <TableCell>{p.sender ?? "-"}</TableCell>
                       <TableCell>
-                        {previewDownloadUrl ? (
-                          <div className="flex items-center">
-                            <Button
-                              variant="ghost"
-                              className="p-0 text-primary underline"
-                              onClick={() => {
-                                setPreviewUrl(previewDownloadUrl);
-                                setShowModal(true);
-                              }}
-                            >
-                              <Eye />
-                            </Button>
-                            <a
-                              href={previewDownloadUrl}
-                              download
-                              className="ml-2 text-primary underline"
-                            >
-                              <Download />
-                            </a>
-                          </div>
-                        ) : (
-                          "-"
-                        )}
+                        <div className="flex flex-col gap-2">
+                          {isSupabaseValid && (
+                            <div className="border rounded p-2">
+                              <div className="font-semibold mb-1">Link 1</div>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="ghost"
+                                  className="p-0 text-primary underline"
+                                  onClick={() => {
+                                    setPreviewUrl(supabaseUrl);
+                                    setShowModal(true);
+                                  }}
+                                >
+                                  <Eye />
+                                </Button>
+                                <a
+                                  href={supabaseUrl}
+                                  download
+                                  className="text-primary underline"
+                                >
+                                  <Download />
+                                </a>
+                              </div>
+                            </div>
+                          )}
+                          {localUrl && (
+                            <div className="border rounded p-2">
+                              <div className="font-semibold mb-1">Link 2</div>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="ghost"
+                                  className="p-0 text-primary underline"
+                                  onClick={() => {
+                                    setPreviewUrl(localUrl);
+                                    setShowModal(true);
+                                  }}
+                                >
+                                  <Eye />
+                                </Button>
+                                <a
+                                  href={localUrl}
+                                  download
+                                  className="text-primary underline"
+                                >
+                                  <Download />
+                                </a>
+                              </div>
+                            </div>
+                          )}
+                          {!isSupabaseValid && !localUrl && "-"}
+                        </div>
                       </TableCell>
                       <TableCell>
                         {p.pay_complete ? (
@@ -193,9 +216,31 @@ export default function PaymentHistory() {
           <Modal isOpen={showModal && !!previewUrl} onClose={() => setShowModal(false)}>
             <h2 className="text-lg font-bold mb-4">Receipt Preview</h2>
             {previewUrl && previewUrl.match(/\.(pdf)$/i) ? (
-              <iframe src={previewUrl} className="w-full h-96" title="PDF Preview" />
+              <iframe
+                src={previewUrl}
+                className="w-full h-96"
+                title="PDF Preview"
+                onError={(e) => {
+                  // fallback to local file if supabase fails
+                  if (previewUrl && previewUrl.startsWith("http")) {
+                    const localFallback = `/receipts/dr/${encodeURIComponent(previewUrl.split('/').pop() || '')}`;
+                    setPreviewUrl(localFallback);
+                  }
+                }}
+              />
             ) : (
-              previewUrl && <img src={previewUrl} alt="Receipt" className="w-full max-h-96 object-contain" />
+              previewUrl && <img
+                src={previewUrl}
+                alt="Receipt"
+                className="w-full max-h-96 object-contain"
+                onError={(e) => {
+                  // fallback to local file if supabase fails
+                  if (previewUrl && previewUrl.startsWith("http")) {
+                    const localFallback = `/receipts/dr/${encodeURIComponent(previewUrl.split('/').pop() || '')}`;
+                    setPreviewUrl(localFallback);
+                  }
+                }}
+              />
             )}
             <div className="mt-4 flex justify-end">
               <a href={previewUrl || undefined} download className="mr-2">
