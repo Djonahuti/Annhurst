@@ -127,8 +127,8 @@ export default function PaymentHistory() {
               </TableHeader>
               <TableBody>
                 {payments.map((p) => {
-                  let localUrl = p.receipt ? `/receipts/dr/${encodeURIComponent(p.receipt)}` : null;
-                  let supabaseUrl = p.receipt ? supabaseUrls[p.receipt] : null;
+                  const localUrl = p.receipt ? `/receipts/dr/${encodeURIComponent(p.receipt)}` : null;
+                  const supabaseUrl = p.receipt ? supabaseUrls[p.receipt] : null;
                   // For preview/download: try local first, else supabase
                   let previewDownloadUrl = localUrl;
                   // If running in production (Vercel), local files won't exist, so fallback to supabase
