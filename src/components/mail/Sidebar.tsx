@@ -306,8 +306,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const getHomeLink = () => {
     if (role === "admin") return "/admin";
-    if (role === "coordinator") return "/coordinator";
-    if (role === "driver") return "/driver";
+    if (role === "coordinator") return "/user";
+    if (role === "driver") return "/profile";
     return "/";
   }
 
