@@ -101,6 +101,7 @@ export default function DriverProfile() {
   const [loading, setLoading] = useState(true)
   const [busLoading, setBusLoading] = useState(true)
   const [payments, setPayments] = useState<Payment[]>([]);  
+  const [paymentsLoading, setPaymentsLoading] = useState(true);
   const [isContactModalOpen, setContactModalOpen] = useState(false);  
 
   useEffect(() => {
@@ -168,10 +169,11 @@ export default function DriverProfile() {
       setLoading(false)
     }
     const fetchPayments = async () => {
+      setPaymentsLoading(true); // start loading
       const busId = buses.length > 0 ? buses[0].id : null;
       if (!busId) {
         setPayments([]);
-        setLoading(false);
+        setPaymentsLoading(false);
         return;
       }
       const { data, error } = await supabase
@@ -186,7 +188,7 @@ export default function DriverProfile() {
       } else {
         setPayments(data as Payment[]);
       }
-      setLoading(false);
+      setPaymentsLoading(false);
     };
 
     fetchPayments();
@@ -300,46 +302,48 @@ export default function DriverProfile() {
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
-          {payments.length === 0 ? (
-            <p>No payments recorded yet.</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Sender</TableHead>
-                  <TableHead>Receipt</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Inspection</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {payments.map((p) => (
-                  <TableRow key={p.id}>
-                    <TableCell>
-                      {p.payment_date || p.created_at.split("T")[0]}
-                    </TableCell>
-                    <TableCell>{p.amount ?? 0}</TableCell>
-                    <TableCell>{p.pay_type ?? "-"}</TableCell>
-                    <TableCell>{p.sender ?? "-"}</TableCell>
-                    <TableCell>{p.receipt ?? "-"}</TableCell>
-                    <TableCell>
-                      {p.pay_complete ? (
-                        <span className="text-green-600 font-medium">Complete</span>
-                      ) : (
-                        <span className="text-red-600 font-medium">Pending</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {p.inspection ? "✔️" : "❌"}
-                    </TableCell>
+            {paymentsLoading ? (
+              <div className="flex items-center justify-center h-32">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
+            ) : payments.length === 0 ? (
+              <p>No payments recorded yet.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Sender</TableHead>
+                    <TableHead>Receipt</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Inspection</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+                </TableHeader>
+                <TableBody>
+                  {payments.map((p) => (
+                    <TableRow key={p.id}>
+                      <TableCell>
+                        {p.payment_date || p.created_at.split("T")[0]}
+                      </TableCell>
+                      <TableCell>{p.amount ?? 0}</TableCell>
+                      <TableCell>{p.pay_type ?? "-"}</TableCell>
+                      <TableCell>{p.sender ?? "-"}</TableCell>
+                      <TableCell>{p.receipt ?? "-"}</TableCell>
+                      <TableCell>
+                        {p.pay_complete ? (
+                          <span className="text-green-600 font-medium">Complete</span>
+                        ) : (
+                          <span className="text-red-600 font-medium">Pending</span>
+                        )}
+                      </TableCell>
+                      <TableCell>{p.inspection ? "✔️" : "❌"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
 
