@@ -160,7 +160,7 @@ export default function ListView() {
   };  
 
   return (
-    <div className="flex-1 overflow-y-auto bg-background">
+    <div className="flex-1 overflow-y-auto">
       {contacts.map((contact) => (
         <div
           key={`${contact.source}-${contact.id}`}
@@ -168,7 +168,7 @@ export default function ListView() {
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") setSelectedMail(contact);
           }}
-          className={`w-full text-left flex flex-col gap-2 border-b p-4 hover:bg-accent ${
+          className={`w-full text-left flex flex-col gap-2 border-b p-4 hover:bg-red-50 hover:text-primary hover:border-primary ${
             contact.is_read ? 'myBox' : 'unread'
           }`}
         >

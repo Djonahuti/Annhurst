@@ -7,7 +7,7 @@ import { PopRight } from "../Shared/PopRight";
 export function MailHeader() {
   return (
     <>
-    <header className="sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-4 z-50">
+    <header className="sticky top-0 flex shrink-0 items-center gap-2 border-b sm:ring-1 sm:ring-gray-900/10 bg-gray-50 dark:bg-gray-900/90 p-4 z-50">
     <div>
     <SidebarTrigger className="-ml-1" />
     <Separator orientation="vertical" className="mr-2 h-4" />

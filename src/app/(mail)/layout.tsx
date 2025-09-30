@@ -26,7 +26,7 @@ export default function MailLayout({
       <SidebarInset>
         <MailHeader />
         <main>
-            <div className="flex flex-1 flex-col gap-4 p-4">
+            <div className="flex flex-1 flex-col gap-4 p-4 bg-gray-50 dark:bg-gray-900/80">
                 {children}
                 <Toaster />
             </div>

@@ -337,7 +337,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {/* This will make the sidebar appear as icons. */}
       <Sidebar
         collapsible="none"
-        className="!w-[calc(var(--sidebar-width-icon)_+_1px)] border-r"
+        className="!w-[calc(var(--sidebar-width-icon)_+_1px)] border-r sm:ring-1 sm:ring-gray-900/10 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/90"
       >
         <SidebarHeader>
           <SidebarMenu>
@@ -374,7 +374,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         setOpen(true)
                       }}
                       isActive={activeItem?.title === item.title}
-                      className="px-2.5 md:px-2"
+                      className={`px-2.5 md:px-2 transition-colors ${
+                        activeItem?.title === item.title
+                          ? 'bg-red-50 text-primary border border-primary'
+                          : 'text-gray-700 dark:text-gray-200 hover:bg-primary hover:text-white transition-colors'
+                      }`}
                     >
                       <item.icon />
                       <span>{item.title}</span>
@@ -395,7 +399,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       {/* This is the second sidebar */}
       {/* We disable collapsible and let it fill remaining space */}
-      <Sidebar collapsible="none" className="hidden flex-1 md:flex flex-col">
+      <Sidebar collapsible="none" className="hidden flex-1 md:flex flex-col sm:ring-1 sm:ring-gray-900/10 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/90">
         <SidebarHeader className="gap-3.5 border-b p-4">
           <div className="flex w-full items-center justify-between">
             <div className="text-base font-medium text-foreground">
@@ -421,7 +425,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") setSelectedMail(contact);
                   }}
-                  className={`flex flex-col items-start gap-2 border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
+                  className={`flex flex-col items-start gap-2 border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-red-50 hover:text-primary hover:border-primary ${
                     contact.is_read ? 'myBox' : 'unread font-bold' // Add conditional class
                   }`}
                 >

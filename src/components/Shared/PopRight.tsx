@@ -200,7 +200,7 @@ export function PopRight() {
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-56 overflow-hidden rounded-lg p-0"
+          className="w-56 overflow-hidden rounded-lg p-0 bg-gray-50 dark:bg-gray-900/90"
           align="end"
         >
           <Sidebar collapsible="none" className="bg-transparent">
@@ -211,7 +211,7 @@ export function PopRight() {
                     <SidebarMenu>
                       {group.map((item, index) => (
                         <SidebarMenuItem key={index}>
-                          <SidebarMenuButton>
+                          <SidebarMenuButton className="hover:bg-red-50 hover:text-primary hover:border-primary w-full p-2 rounded hover:border-b">
                           <a href={item.url} className="flex items-center gap-2">
                             <item.icon /> <span>{item.label}</span>
                             {typeof item.count === "number" && item.count > 0 && (
@@ -229,7 +229,7 @@ export function PopRight() {
                 <SidebarGroupContent className="gap-0">
                   <SidebarMenu>
                       <SidebarMenuItem>
-                        <SidebarMenuButton onClick={handleLogout} className="flex items-center gap-2">
+                        <SidebarMenuButton onClick={handleLogout} className="flex items-center gap-2 hover:bg-red-50 hover:text-primary hover:border-primary w-full p-2 rounded hover:border-b">
                           <LogOut /> <span>Log Out</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
