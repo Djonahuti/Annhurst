@@ -1,12 +1,22 @@
 'use client'
 import AdminSidebar from "@/components/Shared/Admin/sidebar";
 import TopBar from "@/components/Shared/Admin/TopBar";
-import { ReactNode, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { ReactNode, useEffect, useState } from "react";
 import { Toaster } from "sonner";
 
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const router = useRouter();
+  const { user, role, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && (!user || role !== 'admin')) {
+      router.push('/login')
+    }
+  }, [user, role, loading])  
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900/80">
         <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
