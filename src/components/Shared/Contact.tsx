@@ -192,7 +192,7 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
       }
 
       // get receiver (driver) if driverId provided
-      let driver: any = null;
+      let driver: { id?: number | null; name?: string; email?: string } | null = null;
       if (driverId) {
         const { data: driverData } = await supabase
           .from("driver")
