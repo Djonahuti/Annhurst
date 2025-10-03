@@ -33,8 +33,9 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
   const [currentName, setCurrentName] = useState<string>("");
   const [currentEmail, setCurrentEmail] = useState<string>("");
   const [receiverType, setReceiverType] = useState<'coordinator' | 'driver' | null>(null);
-  const [coordinatorsList, setCoordinatorsList] = useState<Array<{id:number,name:string,email:string}>>([]);
-  const [driversList, setDriversList] = useState<Array<{id:number,name:string,email:string}>>([]);
+  type Receiver = { id: number; name: string; email: string };
+  const [coordinatorsList, setCoordinatorsList] = useState<Receiver[]>([]);
+  const [driversList, setDriversList] = useState<Receiver[]>([]);
   const [selectedReceiverId, setSelectedReceiverId] = useState<number | null>(null);
 
   // Load subjects
@@ -75,10 +76,10 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
   useEffect(() => {
     const fetchLists = async () => {
       if (role !== 'admin') return;
-      const { data: coords } = await supabase.from('coordinators').select('id, name, email');
-      const { data: drs } = await supabase.from('driver').select('id, name, email');
-      if (coords) setCoordinatorsList(coords as any);
-      if (drs) setDriversList(drs as any);
+  const { data: coords } = await supabase.from('coordinators').select('id, name, email');
+  const { data: drs } = await supabase.from('driver').select('id, name, email');
+  if (coords) setCoordinatorsList(coords as Receiver[]);
+  if (drs) setDriversList(drs as Receiver[]);
     }
     fetchLists();
   }, [role, supabase]);
