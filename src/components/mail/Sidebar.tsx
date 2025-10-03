@@ -109,6 +109,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const [settings, setSettings] = React.useState<Settings | null>(null);
   const [theme, setTheme] = React.useState<'light' | 'dark'>('light');
   const { user, role } = useAuth()   // ✅ new
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  // Handle search input
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Filter contacts based on search
+  const filteredContacts = contacts.filter((contact) => {
+    const q = searchQuery.toLowerCase();
+    return (
+      contact.sender?.toLowerCase().includes(q) ||
+      (typeof contact.receiver === "string" ? contact.receiver.toLowerCase().includes(q) : false) ||
+      (typeof contact.subject?.subject === "string" ? contact.subject.subject.toLowerCase().includes(q) : false) ||
+      (typeof contact.message === "string" ? contact.message.toLowerCase().includes(q) : false)
+    );
+  });
 
   React.useEffect(() => {
     const fetchSettings = async () => {
@@ -400,12 +417,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               />
             </Label>
           </div>
-          <SidebarInput placeholder="Type to search..." />
+          <SidebarInput
+           placeholder="Type to search..." 
+           value={searchQuery}
+           onChange={handleSearchChange}
+          />
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-              {contacts.map((contact) => (
+              {filteredContacts.length > 0 ? (
+                filteredContacts.map((contact) => (
                 <div
                   key={`${contact.source}-${contact.id}`}
                   onClick={() => handleSelectMail(contact)}
@@ -456,7 +478,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     {String(contact.message)}
                   </span>
                 </div>
-              ))}
+              ))
+            ) : (
+              <p className="p-4 text-sm text-gray-500">No results found.</p>
+            )}
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
