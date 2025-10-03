@@ -174,10 +174,10 @@ export default function ListView() {
                 className="w-6 h-6 rounded-full object-cover"
               />                     
             ):(
-              <AvatarFallback className="rounded-lg">{contact.sender.substring(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback className="rounded-lg">{(activeFilter === 'Sent' ? (contact.receiver || '') : (contact.sender || '')).substring(0, 2).toUpperCase()}</AvatarFallback>
             )}
             </Avatar>
-            <span className="font-medium">{contact.sender}</span>
+            <span className="font-medium">{activeFilter === 'Sent' ? (contact.receiver || contact.sender) : contact.sender}</span>
             <span className="ml-auto text-xs text-muted-foreground">
               {formatSubmittedAt(contact.created_at)}
             </span>

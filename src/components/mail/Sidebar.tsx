@@ -426,11 +426,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     />                     
                   ):(
                     <AvatarFallback className="rounded-lg">
-                      {contact.sender.substring(0, 2).toUpperCase()}
+                      {(activeFilter === 'Sent' ? (contact.receiver || '') : (contact.sender || '')).substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                   )}
                   </Avatar>
-                    <span>{contact.sender}</span>{" "}
+                    <span>{activeFilter === 'Sent' ? (contact.receiver || contact.sender) : contact.sender}</span>{" "}
                     {/* ✅ External badge for contact_us */}
                     {role === "admin" && String(contact.id).startsWith("us-") && (
                       <Link href={`/contact-us/${String(contact.id).replace("us-", "")}`}>
