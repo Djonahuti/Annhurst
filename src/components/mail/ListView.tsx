@@ -36,52 +36,45 @@ export default function ListView() {
         .select('*, driver(name, email, avatar), subject(subject)')
         .order('created_at', { ascending: false });
 
-      if (activeFilter === "Starred") {
+      // Role-based visibility rules
+      if (role === 'driver' || role === 'coordinator') {
+        if (activeFilter === 'Sent') {
+          query = query.eq('sender_email', user?.email || '')
+        } else {
+          query = query.eq('receiver_email', user?.email || '')
+        }
+      } else if (role === 'admin') {
+        if (activeFilter === 'Sent') {
+          query = query.eq('sender_email', user?.email || '')
+        } else {
+          query = query.neq('sender_email', user?.email || '')
+        }
+      }
+
+      // Additional UI filters
+      if (activeFilter === 'Starred') {
         query = query.eq('is_starred', true);
-      } else if (activeFilter === "Important" && role !== "admin") {
+      } else if (activeFilter === 'Important' && role !== 'admin') {
         query = query.eq('is_read', false);
       }
 
-      // fetch normal contacts
+      // fetch normal contacts after all filters
       const { data, error } = await query
       let mapped: Contact[] = []
       if (!error && data) {
         mapped = (data as Contact[]).map((c) => ({
           ...c,
-          source: "contact",
+          source: 'contact',
         }))
       }
 
+      // Admin: augment Important with external contact_us
       let normalizedContacts: Contact[] = []
-      // --- 🔑 Apply role-based filtering ---
-      if (role === "driver") {
-        const { data: driver } = await supabase
-          .from("driver")
-          .select("id,name")
-          .eq("email", user?.email)
-          .single()
-        if (activeFilter === "Sent") {
-          query = query.eq("sender", driver?.name || "")
-        } else {
-          query = query.eq("driver", driver?.id || 0)
-        }
-      } else if (role === "coordinator") {
-        const { data: coord } = await supabase
-          .from("coordinators")
-          .select("id,name")
-          .eq("email", user?.email)
-          .single()
-        if (activeFilter === "Sent") {
-          query = query.eq("sender", coord?.name || "")
-        } else {
-          query = query.eq("coordinator", coord?.id || 0)
-        }
-      } else if (role === "admin" && activeFilter === "Important") {
-        // Admin: fetch external contact_us + normal contact
+      if (role === 'admin' && activeFilter === 'Important') {
         const { data: contactUs } = await supabase
-          .from("contact_us")
-          .select("*")
-          .order("created_at", { ascending: false })
+          .from('contact_us')
+          .select('*')
+          .order('created_at', { ascending: false })
 
         if (contactUs) {
           type ContactUs = {
@@ -97,25 +90,25 @@ export default function ListView() {
             coordinator_id: 0,
             driver_id: 0,
             subject_id: 0,
-            message: c.message, // Use string for message
+            message: c.message,
             created_at: c.created_at,
             transaction_date: null,
             is_starred: false,
             is_read: false,
             attachment: null,
-            sender: c.name || "Unknown",
-            receiver: "Admin",
-            sender_email: c.email || "",
-            receiver_email: "",
+            sender: c.name || 'Unknown',
+            receiver: 'Admin',
+            sender_email: c.email || '',
+            receiver_email: '',
             driver: null,
-            subject: { subject: c.subject || "Contact Us" },
+            subject: { subject: c.subject || 'Contact Us' },
             coordinator: null,
-            source: "contact_us",
+            source: 'contact_us',
           }))
         }
       }
 
-      setContacts([...mapped, ...normalizedContacts]) // clear first
+      setContacts([...mapped, ...normalizedContacts])
     }
 
     fetchContacts()
@@ -147,7 +140,7 @@ export default function ListView() {
   const toggleStar = async (contact: Contact) => {
     const newStarredStatus = !contact.is_starred;
     await supabase
-      .from('contacts')
+      .from('contact')
       .update({ is_starred: newStarredStatus })
       .eq('id', contact.id);
     
