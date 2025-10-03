@@ -3,7 +3,7 @@
 import * as React from "react"
 import {
   Bell,
-  Octagon,
+  AlertOctagon,
   Inbox,
   MoreHorizontal,
   PersonStanding,
@@ -12,7 +12,7 @@ import {
   File,
   Pencil,
   Send,
-  Trash,
+  Trash2,
   LogOut,
 } from "lucide-react"
 
@@ -78,12 +78,12 @@ export function PopRight() {
       },
       {
         label: "Spam",
-        icon: Octagon,
+        icon: AlertOctagon,
         url: "*",
       },
       {
         label: "Trash",
-        icon: Trash,
+        icon: Trash2,
         url: "*",
       },    
     ],
