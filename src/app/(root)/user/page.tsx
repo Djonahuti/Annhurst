@@ -26,6 +26,7 @@ interface Bus {
   bus_code: string | null;
   plate_no: string | null;
   driver_name: string | null;
+  driver_id: number | null;
 }
 
 interface Coordinator {
@@ -99,11 +100,17 @@ export default function UserProfile() {
             ? driverObj.name
             : 'N/A';
 
+          // Normalize driver id if present (could be string or number)
+          const driverId = driverObj && driverObj.id !== undefined
+            ? (typeof driverObj.id === 'string' ? parseInt(String(driverObj.id), 10) : Number(driverObj.id))
+            : null;
+
           return {
             id: typeof bus.id === 'string' ? parseInt(bus.id, 10) : bus.id,
             bus_code: bus.bus_code ?? null,
             plate_no: bus.plate_no ?? null,
             driver_name: driverName,
+            driver_id: driverId,
           };
         });
         setBuses(formattedBuses);
@@ -195,7 +202,8 @@ export default function UserProfile() {
                       <Button
                        className='mt-2 ml-auto block text-gray-200'
                        onClick={() => {
-                         setSelectedDriverId(bus.driver_name !== 'N/A' ? bus.id : null);
+                         // Use the driver_id (if available) so we target the correct driver record
+                         setSelectedDriverId(bus.driver_name !== 'N/A' ? bus.driver_id : null);
                          setContactModalOpen(true);
                        }}
                       >
