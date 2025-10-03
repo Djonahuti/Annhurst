@@ -47,7 +47,7 @@ type UserData = {
 }
 
 export function PopRight() {
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [isPopOpen, setIsPopOpen] = React.useState(false)
   const [unreadCount, setUnreadCount] = React.useState(0);
   const { user, role } = useAuth();
 
@@ -112,7 +112,7 @@ export function PopRight() {
   ]  
 
   React.useEffect(() => {
-    setIsOpen(true)
+    setIsPopOpen(true)
   }, []);
 
   const [isContactModalOpen, setContactModalOpen] = React.useState(false);
@@ -193,7 +193,7 @@ export function PopRight() {
           <AvatarFallback className="rounded-full">{profile.name.split(" ").map((n) => n[0]).join("")}</AvatarFallback>
         )}
       </Avatar>
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <Popover open={isPopOpen} onOpenChange={setIsPopOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
@@ -215,23 +215,35 @@ export function PopRight() {
                     <SidebarMenu>
                       {group.map((item, index) => (
                         <SidebarMenuItem key={index}>
-                          <SidebarMenuButton className="hover:bg-red-50 hover:text-primary hover:border-primary w-full p-2 rounded hover:border-b">
                           {item.label === "Compose" ? (
-                            <button onClick={() => setContactModalOpen(true)} className="flex items-center gap-2 w-full text-left">
-                              <item.icon /> <span>{item.label}</span>
-                              {typeof item.count === "number" && item.count > 0 && (
-                                <Badge className="ml-auto text-xs bg-red-500 text-white rounded-full">{item.count}</Badge>
-                              )}
-                            </button>
+                            role === 'admin' ? (
+                              <SidebarMenuButton
+                                onClick={() => setContactModalOpen(true)}
+                                className="flex items-center gap-2 hover:bg-red-50 hover:text-primary hover:border-primary w-full p-2 rounded hover:border-b"
+                              >
+                                <item.icon /> <span>{item.label}</span>
+                                {typeof item.count === "number" && item.count > 0 && (
+                                  <Badge className="ml-auto text-xs bg-red-500 text-white rounded-full">
+                                    {item.count}
+                                  </Badge>
+                                )}
+                              </SidebarMenuButton>
+                            ) : null
                           ) : (
-                            <a href={item.url} className="flex items-center gap-2">
-                              <item.icon /> <span>{item.label}</span>
-                              {typeof item.count === "number" && item.count > 0 && (
-                                <Badge className="ml-auto text-xs bg-red-500 text-white rounded-full">{item.count}</Badge>
-                              )}
-                            </a>
+                            <SidebarMenuButton
+                              asChild
+                              className="hover:bg-red-50 hover:text-primary hover:border-primary w-full p-2 rounded hover:border-b"
+                            >
+                              <a href={item.url} className="flex items-center gap-2">
+                                <item.icon /> <span>{item.label}</span>
+                                {typeof item.count === "number" && item.count > 0 && (
+                                  <Badge className="ml-auto text-xs bg-red-500 text-white rounded-full">
+                                    {item.count}
+                                  </Badge>
+                                )}
+                              </a>
+                            </SidebarMenuButton>
                           )}
-                          </SidebarMenuButton>
                         </SidebarMenuItem>
                       ))}
                     </SidebarMenu>
@@ -253,7 +265,7 @@ export function PopRight() {
           </Sidebar>
         </PopoverContent>
       </Popover>
-      <Modal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)}>
+      <Modal isOpen2={isContactModalOpen} onClose={() => setContactModalOpen(false)}>
         <Contact coordinatorId={null} />
       </Modal>
       <div className="block md:hidden text-sm">

@@ -3,13 +3,13 @@ import { X } from 'lucide-react';
 import React from 'react';
 
 interface ModalProps {
-  isOpen: boolean;
+  isOpen2: boolean;
   onClose: () => void;
   children: React.ReactNode;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
-  if (!isOpen) return null;
+const Modal: React.FC<ModalProps> = ({ isOpen2, onClose, children }) => {
+  if (!isOpen2) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">

@@ -381,7 +381,7 @@ export default function DriverProfile() {
       </div>
 
       {/* Contact Modal */}
-      <Modal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)}>
+      <Modal isOpen2={isContactModalOpen} onClose={() => setContactModalOpen(false)}>
         <Contact
           coordinatorId={buses[0]?.coordinator_id ?? null}
         />

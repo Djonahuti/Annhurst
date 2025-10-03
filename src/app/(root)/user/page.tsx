@@ -218,7 +218,7 @@ export default function UserProfile() {
         </CardContent>
       </Card>
       {/* Contact Modal */}
-      <Modal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)}>
+      <Modal isOpen2={isContactModalOpen} onClose={() => setContactModalOpen(false)}>
         <Contact driverId={selectedDriverId} />
       </Modal>    
     </div>
