@@ -325,8 +325,18 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
                 <SelectValue placeholder="Choose receiver type" />
               </SelectTrigger>
               <SelectContent className="bg-gray-50 dark:bg-gray-900/90">
-                <SelectItem value="coordinator">Coordinator</SelectItem>
-                <SelectItem value="driver">Driver</SelectItem>
+                <SelectItem
+                 value="coordinator"
+                 className="data-[state=checked]:bg-primary data-[state=checked]:text-gray-200 data-[highlighted]:bg-primary-light data-[highlighted]:text-gray-200"
+                >
+                  Coordinator
+                </SelectItem>
+                <SelectItem
+                 value="driver"
+                 className="data-[state=checked]:bg-primary data-[state=checked]:text-gray-200 data-[highlighted]:bg-primary-light data-[highlighted]:text-gray-200"
+                >
+                  Driver
+                </SelectItem>
               </SelectContent>
             </Select>
 
@@ -337,7 +347,11 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
                 </SelectTrigger>
                 <SelectContent className="bg-gray-50 dark:bg-gray-900/90">
                   {coordinatorsList.map(c => (
-                    <SelectItem key={c.id} value={String(c.id)}>{c.name} - {c.email}</SelectItem>
+                    <SelectItem
+                     key={c.id} 
+                     value={String(c.id)}
+                     className="data-[state=checked]:bg-primary data-[state=checked]:text-gray-200 data-[highlighted]:bg-primary-light data-[highlighted]:text-gray-200"
+                    >{c.name} - {c.email}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -350,7 +364,11 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
                 </SelectTrigger>
                 <SelectContent className="bg-gray-50 dark:bg-gray-900/90">
                   {driversList.map(d => (
-                    <SelectItem key={d.id} value={String(d.id)}>{d.name} - {d.email}</SelectItem>
+                    <SelectItem
+                     key={d.id} 
+                     value={String(d.id)}
+                     className="data-[state=checked]:bg-primary data-[state=checked]:text-gray-200 data-[highlighted]:bg-primary-light data-[highlighted]:text-gray-200"
+                    >{d.name} - {d.email}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
