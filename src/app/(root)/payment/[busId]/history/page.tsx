@@ -207,7 +207,7 @@ export default function PaymentHistory() {
             </Table>
           )}
           {/* Modal for preview using Modal.tsx */}
-          <Modal isOpen={showModal && !!previewUrl} onClose={() => setShowModal(false)}>
+          <Modal isOpen2={showModal && !!previewUrl} onClose={() => setShowModal(false)}>
             <h2 className="text-lg font-bold mb-4">Receipt Preview</h2>
             {previewUrl && previewUrl.match(/\.(pdf)$/i) ? (
               <iframe
