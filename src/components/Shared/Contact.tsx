@@ -32,6 +32,10 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
   const [file, setFile] = useState<File | null>(null);
   const [currentName, setCurrentName] = useState<string>("");
   const [currentEmail, setCurrentEmail] = useState<string>("");
+  const [receiverType, setReceiverType] = useState<'coordinator' | 'driver' | null>(null);
+  const [coordinatorsList, setCoordinatorsList] = useState<Array<{id:number,name:string,email:string}>>([]);
+  const [driversList, setDriversList] = useState<Array<{id:number,name:string,email:string}>>([]);
+  const [selectedReceiverId, setSelectedReceiverId] = useState<number | null>(null);
 
   // Load subjects
   useEffect(() => {
@@ -66,6 +70,18 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
     };
     fetchName();
   }, [user, role, supabase]);  
+
+  // If admin, fetch lists of potential receivers
+  useEffect(() => {
+    const fetchLists = async () => {
+      if (role !== 'admin') return;
+      const { data: coords } = await supabase.from('coordinators').select('id, name, email');
+      const { data: drs } = await supabase.from('driver').select('id, name, email');
+      if (coords) setCoordinatorsList(coords as any);
+      if (drs) setDriversList(drs as any);
+    }
+    fetchLists();
+  }, [role, supabase]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,6 +175,39 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
       payload.receiver_email = driver?.email || "";      
     }
 
+    // If admin, allow selecting receiver type and specific receiver
+    if (role === 'admin') {
+      // fetch admin sender details
+      const { data: admin } = await supabase
+        .from('admins')
+        .select('id, name, email')
+        .eq('email', user?.email)
+        .single();
+
+      payload.sender = admin?.name || user?.email;
+      payload.sender_email = admin?.email || user?.email;
+
+      if (!receiverType || !selectedReceiverId) {
+        alert('Please select receiver type and receiver.');
+        setLoading(false);
+        return;
+      }
+
+      if (receiverType === 'coordinator') {
+        const receiver = coordinatorsList.find(c => c.id === selectedReceiverId);
+        payload.coordinator = receiver?.id || null;
+        payload.receiver = receiver?.name || 'Unknown';
+        payload.receiver_email = receiver?.email || '';
+        payload.driver = null;
+      } else {
+        const receiver = driversList.find(d => d.id === selectedReceiverId);
+        payload.driver = receiver?.id || null;
+        payload.receiver = receiver?.name || 'Unknown';
+        payload.receiver_email = receiver?.email || '';
+        payload.coordinator = null;
+      }
+    }
+
     const { error } = await supabase.from("contact").insert(payload);
 
     setLoading(false);
@@ -226,6 +275,49 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
         />    
         </div>    
       </div>
+
+      {role === 'admin' && (
+        <div>
+          <Label className="block text-sm font-medium mb-1">Send to</Label>
+          <div className="flex gap-2">
+            <Select onValueChange={(val) => { setReceiverType(val as 'coordinator' | 'driver'); setSelectedReceiverId(null); }}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choose receiver type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="coordinator">Coordinator</SelectItem>
+                <SelectItem value="driver">Driver</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {receiverType === 'coordinator' && (
+              <Select onValueChange={(val) => setSelectedReceiverId(Number(val))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select coordinator" />
+                </SelectTrigger>
+                <SelectContent>
+                  {coordinatorsList.map(c => (
+                    <SelectItem key={c.id} value={String(c.id)}>{c.name} - {c.email}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {receiverType === 'driver' && (
+              <Select onValueChange={(val) => setSelectedReceiverId(Number(val))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select driver" />
+                </SelectTrigger>
+                <SelectContent>
+                  {driversList.map(d => (
+                    <SelectItem key={d.id} value={String(d.id)}>{d.name} - {d.email}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+        </div>
+      )}
 
       <div>
         <Label className="block text-sm font-medium mb-1">Attachment</Label>

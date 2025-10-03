@@ -36,6 +36,8 @@ import { useAuth } from "@/contexts/AuthContext"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Badge } from "../ui/badge"
 import { ThemeToggle } from "../ThemeToggle"
+import Modal from "@/components/Modal"
+import Contact from "./Contact"
 
 type UserData = {
   id: number
@@ -112,6 +114,8 @@ export function PopRight() {
   React.useEffect(() => {
     setIsOpen(true)
   }, []);
+
+  const [isContactModalOpen, setContactModalOpen] = React.useState(false);
 
   const [profile, setProfile] = React.useState<UserData | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -212,12 +216,21 @@ export function PopRight() {
                       {group.map((item, index) => (
                         <SidebarMenuItem key={index}>
                           <SidebarMenuButton className="hover:bg-red-50 hover:text-primary hover:border-primary w-full p-2 rounded hover:border-b">
-                          <a href={item.url} className="flex items-center gap-2">
-                            <item.icon /> <span>{item.label}</span>
-                            {typeof item.count === "number" && item.count > 0 && (
-                              <Badge className="ml-auto text-xs bg-red-500 text-white rounded-full">{item.count}</Badge>
-                            )}
-                          </a>
+                          {item.label === "Compose" ? (
+                            <button onClick={() => setContactModalOpen(true)} className="flex items-center gap-2 w-full text-left">
+                              <item.icon /> <span>{item.label}</span>
+                              {typeof item.count === "number" && item.count > 0 && (
+                                <Badge className="ml-auto text-xs bg-red-500 text-white rounded-full">{item.count}</Badge>
+                              )}
+                            </button>
+                          ) : (
+                            <a href={item.url} className="flex items-center gap-2">
+                              <item.icon /> <span>{item.label}</span>
+                              {typeof item.count === "number" && item.count > 0 && (
+                                <Badge className="ml-auto text-xs bg-red-500 text-white rounded-full">{item.count}</Badge>
+                              )}
+                            </a>
+                          )}
                           </SidebarMenuButton>
                         </SidebarMenuItem>
                       ))}
@@ -240,6 +253,9 @@ export function PopRight() {
           </Sidebar>
         </PopoverContent>
       </Popover>
+      <Modal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)}>
+        <Contact coordinatorId={null} />
+      </Modal>
       <div className="block md:hidden text-sm">
           <ThemeToggle />
       </div>      
