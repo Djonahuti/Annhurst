@@ -107,7 +107,7 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
         alert("Attachment upload failed.");
       } else {
         const { data: urlData } = supabase.storage
-          .from("attachments")
+          .from("receipts")
           .getPublicUrl(filePath);
         attachmentUrl = urlData.publicUrl;
       }
@@ -140,40 +140,74 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
         .eq("email", user?.email)
         .single();
 
-      // get receiver (coordinator)
-      const { data: coord } = await supabase
-        .from("coordinators")
-        .select("id, name, email")
-        .eq("id", coordinatorId)
-        .single();
+      // resolve coordinator: prefer provided prop, else derive from buses by driver
+      let resolvedCoordinatorId: number | null = coordinatorId ?? null;
+      if (!resolvedCoordinatorId && driver?.id) {
+        const { data: busRows } = await supabase
+          .from("buses")
+          .select("coordinator")
+          .eq("driver", driver.id)
+          .limit(1);
+        const coordinatorFromBus = Array.isArray(busRows) && busRows.length > 0 ? (busRows[0] as { coordinator: number | null }).coordinator : null;
+        resolvedCoordinatorId = coordinatorFromBus ?? null;
+      }
+
+      // get receiver (coordinator) details if we have an id
+      let coord: { id?: number | null; name?: string; email?: string } | null = null;
+      if (resolvedCoordinatorId) {
+        const { data: coordData } = await supabase
+          .from("coordinators")
+          .select("id, name, email")
+          .eq("id", resolvedCoordinatorId)
+          .single();
+        coord = coordData;
+      }
 
       payload.driver = driver?.id || null;
-      payload.coordinator = coordinatorId;
+      payload.coordinator = resolvedCoordinatorId;
       payload.sender = driver?.name || user?.email;
       payload.sender_email = driver?.email || user?.email;
       payload.receiver = coord?.name || "Unknown";
       payload.receiver_email = coord?.email || "";
     } else if (role === "coordinator") {
-      // get sender (coordinator)
-      const { data: coord } = await supabase
-        .from("coordinators")
-        .select("id, name, email")
-        .eq("email", user?.email)
-        .single();
+      // Determine sender coordinator (prefer prop if provided)
+      let coordRecord: { id?: number | null; name?: string; email?: string } | null = null;
+      if (coordinatorId) {
+        // If coordinatorId prop was passed, try to fetch the coordinator by id to get name/email
+        const { data: coordById, error: coordByIdErr } = await supabase
+          .from("coordinators")
+          .select("id, name, email")
+          .eq("id", coordinatorId)
+          .single();
+        if (!coordByIdErr && coordById) coordRecord = coordById;
+      }
 
-      // get receiver (driver)
-      const { data: driver } = await supabase
-        .from("driver")
-        .select("id, name, email")
-        .eq("id", driverId) // 👈 driverId is passed from props
-        .single();
+      if (!coordRecord) {
+        const { data: coordByEmail } = await supabase
+          .from("coordinators")
+          .select("id, name, email")
+          .eq("email", user?.email)
+          .single();
+        if (coordByEmail) coordRecord = coordByEmail;
+      }
 
-      payload.coordinator = coord?.id || null;
-      payload.driver = driverId;
-      payload.sender = coord?.name || user?.email;
-      payload.sender_email = coord?.email || user?.email;
-      payload.receiver = driver?.name || "Unknown";
-      payload.receiver_email = driver?.email || "";      
+      // get receiver (driver) if driverId provided
+      let driver: any = null;
+      if (driverId) {
+        const { data: driverData } = await supabase
+          .from("driver")
+          .select("id, name, email")
+          .eq("id", driverId)
+          .single();
+        driver = driverData;
+      }
+
+      payload.coordinator = coordRecord?.id || null;
+      payload.driver = driverId || null;
+      payload.sender = coordRecord?.name || currentName || user?.email;
+      payload.sender_email = coordRecord?.email || currentEmail || user?.email;
+      payload.receiver = driver?.name || "";
+      payload.receiver_email = driver?.email || "";
     }
 
     // If admin, allow selecting receiver type and specific receiver
@@ -209,12 +243,17 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
       }
     }
 
+    // Debug: log payload and context so we can see why coordinator/receiver fields may be empty
+    // eslint-disable-next-line no-console
+    console.log("Contact submit", { role, coordinatorId, driverId, payload });
+
     const { error } = await supabase.from("contact").insert(payload);
 
     setLoading(false);
 
     if (error) {
-      console.error("Failed to send message:", error);
+      // eslint-disable-next-line no-console
+      console.error("Failed to send message:", error, { payload });
       toast.error("Failed to send message.");
     } else {
       toast.success("Message sent!");

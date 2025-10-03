@@ -37,6 +37,7 @@ interface Bus {
   coordinator_name: string | null
   coordinator_email: string | null
   coordinator_phone: string[]
+  coordinator_id?: number | null
 }
 
 interface SupabaseBus {
@@ -50,6 +51,7 @@ interface SupabaseBus {
   t_income: string | null;
   initial_owe: string | null;
   coordinator?: {
+    id?: number | string | null;
     name?: string | null;
     email?: string | null;
     phone?: string[];
@@ -160,7 +162,8 @@ export default function DriverProfile() {
           initial_owe: bus.initial_owe,
           coordinator_name: bus.coordinator?.name || 'N/A',
           coordinator_email: bus.coordinator?.email || 'N/A',
-          coordinator_phone: bus.coordinator?.phone || []
+          coordinator_phone: bus.coordinator?.phone || [],
+          coordinator_id: bus.coordinator && bus.coordinator.id ? (typeof bus.coordinator.id === 'string' ? parseInt(String(bus.coordinator.id), 10) : Number(bus.coordinator.id)) : null
         }))
         setBuses(formattedBuses)
       }
@@ -380,7 +383,7 @@ export default function DriverProfile() {
       {/* Contact Modal */}
       <Modal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)}>
         <Contact
-          coordinatorId={buses[0]?.id ? buses[0].id : null}
+          coordinatorId={buses[0]?.coordinator_id ?? null}
         />
       </Modal>
 
