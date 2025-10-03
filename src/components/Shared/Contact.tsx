@@ -265,7 +265,7 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
   };
 
   return (
-    <Card className="w-full max-w-md space-y-8 p-4">
+    <Card className="w-full max-w-md space-y-8 p-4 bg-gray-50 dark:bg-gray-900/90">
     <CardContent>
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
@@ -274,7 +274,7 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
           <SelectTrigger>
             <SelectValue placeholder="Choose a subject" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-gray-50 dark:bg-gray-900/90">
             {subjects.map((subj) => (
               <SelectItem
                key={subj.id} 
@@ -324,7 +324,7 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
               <SelectTrigger>
                 <SelectValue placeholder="Choose receiver type" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-gray-50 dark:bg-gray-900/90">
                 <SelectItem value="coordinator">Coordinator</SelectItem>
                 <SelectItem value="driver">Driver</SelectItem>
               </SelectContent>
@@ -335,7 +335,7 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
                 <SelectTrigger>
                   <SelectValue placeholder="Select coordinator" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-gray-50 dark:bg-gray-900/90">
                   {coordinatorsList.map(c => (
                     <SelectItem key={c.id} value={String(c.id)}>{c.name} - {c.email}</SelectItem>
                   ))}
@@ -348,7 +348,7 @@ export default function Contact({ coordinatorId, driverId, onSuccess }: ContactP
                 <SelectTrigger>
                   <SelectValue placeholder="Select driver" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-gray-50 dark:bg-gray-900/90">
                   {driversList.map(d => (
                     <SelectItem key={d.id} value={String(d.id)}>{d.name} - {d.email}</SelectItem>
                   ))}
