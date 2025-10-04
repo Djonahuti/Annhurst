@@ -23,20 +23,20 @@ export const metadata = {
 export default async function RootLayout({ children }: { children: ReactNode }) {
   // Fetch logo from Supabase server client
   const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.from('settings').select('logo').single();
+  const { data } = await supabase.from('settings').select('logo_blk').single();
   let faviconUrl: string | undefined = undefined;
   let faviconType: string | undefined = undefined;
-  if (data?.logo) {
-    const { data: urlData } = supabase.storage.from('receipts').getPublicUrl(data.logo);
+  if (data?.logo_blk) {
+    const { data: urlData } = supabase.storage.from('receipts').getPublicUrl(data.logo_blk);
     faviconUrl = urlData.publicUrl ?? undefined;
     // Detect file extension and set MIME type
-    if (data.logo.endsWith('.svg')) {
+    if (data.logo_blk.endsWith('.svg')) {
       faviconType = 'image/svg+xml';
-    } else if (data.logo.endsWith('.jpg') || data.logo.endsWith('.jpeg')) {
+    } else if (data.logo_blk.endsWith('.jpg') || data.logo_blk.endsWith('.jpeg')) {
       faviconType = 'image/jpg';
-    } else if (data.logo.endsWith('.png')) {
+    } else if (data.logo_blk.endsWith('.png')) {
       faviconType = 'image/png';
-    } else if (data.logo.endsWith('.ico')) {
+    } else if (data.logo_blk.endsWith('.ico')) {
       faviconType = 'image/x-icon';
     } else {
       faviconType = undefined;
