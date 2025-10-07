@@ -12,6 +12,68 @@ import z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { supabase } from '@/lib/supabase/client'
 import { Controller, useForm } from 'react-hook-form'
+import { useEffect, useState } from 'react'
+
+interface Page {
+  id: string
+  title: string
+  slug: string
+  is_published: boolean
+  meta_description: string | null
+  text: string | null
+  hero_big_black: string | null
+  hero_big_primary: string | null
+  hero_text: string | null
+  hero_year: string | null
+  hero_year_span: string | null
+  hero_100: string | null
+  hero_100_span: string | null
+  hero_24: string | null
+  hero_24_span: string | null
+  hero_primary_button: string | null
+  hero_secondary_button: string | null
+  body_heading: string | null
+  body_sub_heading: string | null
+  body_first_text: string | null
+  body_second_text: string | null
+  body_heading2: string | null
+  body_sub_heading2: string | null
+  body_heading3: string | null
+  body_sub_heading3: string | null
+  body_heading4: string | null
+  body_sub_heading4: string | null
+  section_text: string | null
+  section_head: string | null
+  section_primary_btn: string | null
+  section_secondary_btn: string | null
+  team_img: string | null
+  team_text: string | null
+  team_role: string | null
+  team_img2: string | null
+  team_text2: string | null
+  team_role2: string | null
+  team_img3: string | null
+  team_text3: string | null
+  team_role3: string | null
+  box_head: string | null
+  box_text: string | null
+  box_head2: string | null
+  box_text2: string | null
+  box_head3: string | null
+  box_text3: string | null
+  box_head4: string | null
+  box_text4: string | null
+  box_head5: string | null
+  box_text5: string | null
+  box_head6: string | null
+  box_text6: string | null
+  box_head7: string | null
+  box_text7: string | null
+  box_head8: string | null
+  box_text8: string | null
+  box_head9: string | null
+  box_text9: string | null
+}
 
 // Validation schema
 const contactSchema = z.object({
@@ -27,12 +89,48 @@ const contactSchema = z.object({
 type ContactFormData = z.infer<typeof contactSchema>
 
 export default function ContactPage() {
+  const [page, setPage] = useState<Page | null>(null)
+  const [loading, setLoading] = useState(true)
+
   const { control, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
       service: "higher-purchase"
     }
   })
+
+  useEffect(() => {
+    fetchPage()
+  }, [])
+
+  const fetchPage = async () => {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('pages')
+      .select('*')
+      .eq('slug', 'contact')
+      .eq('is_published', true)
+      .single()
+
+    if (error) {
+      console.error('Error fetching page:', error.message)
+    } else {
+      setPage(data)
+    }
+    setLoading(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  if (!page) {
+    return <div className="p-12 text-center text-red-500">Nothing to see here.</div>
+  }
 
   const onSubmit = async (data: ContactFormData) => {
     try {
@@ -68,11 +166,10 @@ export default function ContactPage() {
         <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-              Contact <span className='text-primary dark:text-primary-light'>Us</span>
+            {page.hero_big_black} <span className='text-primary dark:text-primary-light'>{page.hero_big_primary}</span>
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-700 max-w-3xl mx-auto">
-              Ready to expand your bus fleet? Get in touch with our team today and 
-              discover how we can help you grow your transportation business.
+            {page.hero_text}
             </p>
           </div>
           <div className='mt-8 flex justify-center'>
@@ -82,7 +179,7 @@ export default function ContactPage() {
                 size="lg"
                 className="border-2 flex-1 border-primary dark:border-primary-light text-primary dark:text-primary-light hover:bg-primary-dark dark:hover:bg-primary-light hover:text-gray-200 dark:hover:text-gray-100 transform transition duration-300 ease-in-out hover:scale-105"
               >
-                I have a bus
+                {page.hero_year}
               </Button>
             </Link>
           </div>
@@ -96,12 +193,12 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-300 mb-8">
-                Send us a message
+              {page.body_heading}
               </h2>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="name">Full Name *</Label>
+                    <Label htmlFor="name">{page.body_first_text}</Label>
                     <Controller
                       name="name"
                       control={control}
@@ -112,7 +209,7 @@ export default function ContactPage() {
                     {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                   </div>
                   <div>
-                    <Label htmlFor="email">Email Address *</Label>
+                    <Label htmlFor="email">{page.box_head9}</Label>
                     <Controller
                       name="email"
                       control={control}
@@ -126,7 +223,7 @@ export default function ContactPage() {
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="phone">{page.team_img}</Label>
                     <Controller
                       name="phone"
                       control={control}
@@ -136,7 +233,7 @@ export default function ContactPage() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="company">Company Name</Label>
+                    <Label htmlFor="company">{page.team_text}</Label>
                     <Controller
                       name="company"
                       control={control}
@@ -148,7 +245,7 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="service">Service of Interest</Label>
+                  <Label htmlFor="service">{page.team_role}</Label>
                   <Controller
                     name="service"
                     control={control}
@@ -192,7 +289,7 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="message">Message *</Label>
+                  <Label htmlFor="message">{page.team_img2}</Label>
                   <Controller
                     name="message"
                     control={control}
@@ -217,7 +314,7 @@ export default function ContactPage() {
             {/* Contact Information */}
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-300 mb-8">
-                Get in touch
+              {page.body_heading2}
               </h2>
               <div className="space-y-8">
                 <div className="flex items-start space-x-4">
@@ -228,12 +325,12 @@ export default function ContactPage() {
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300">Phone</h3>
                     <p className="mt-2 text-gray-600 dark:text-gray-400">
                       <a href="tel:+2341234567890" className="hover:text-primary">
-                        +234 809 318 3556
+                      {page.hero_year_span}
                       </a>
                     </p>
                     <p className="text-gray-600 dark:text-gray-400">
                       <a href="tel:+2349876543210" className="hover:text-primary">
-                        +234 816 746 2350
+                      {page.hero_100}
                       </a>
                     </p>
                   </div>
@@ -247,12 +344,12 @@ export default function ContactPage() {
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300">Email</h3>
                     <p className="mt-2 text-gray-600 dark:text-gray-400">
                       <a href="mailto:info@annhurstglobal.com" className="hover:text-primary">
-                        customerservices@annhurst-gsl.com
+                      {page.hero_100_span}
                       </a>
                     </p>
                     <p className="text-gray-600 dark:text-gray-400">
                       <a href="mailto:sales@annhurstglobal.com" className="hover:text-primary">
-                        Info@annhurst-gsl.com
+                      {page.hero_24_span}
                       </a>
                     </p>
                   </div>
@@ -265,9 +362,9 @@ export default function ContactPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300">Office Address</h3>
                     <p className="mt-2 text-gray-600 dark:text-gray-400">
-                      13B Obafemi Anibaba<br />
-                      Admiralty Way Lekki<br />
-                      Lagos, Nigeria
+                    {page.box_text8}<br />
+                    {page.box_head8}<br />
+                    {page.box_text9}
                     </p>
                   </div>
                 </div>
@@ -279,9 +376,9 @@ export default function ContactPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300">Business Hours</h3>
                     <p className="mt-2 text-gray-600 dark:text-gray-400">
-                      Monday - Friday: 8:00 AM - 6:00 PM<br />
-                      Saturday: 9:00 AM - 2:00 PM<br />
-                      Sunday: Closed
+                    {page.box_head6}<br />
+                    {page.box_text7}<br />
+                    {page.box_head7}
                     </p>
                   </div>
                 </div>
@@ -290,20 +387,19 @@ export default function ContactPage() {
               {/* Quick Contact */}
               <div className="mt-12 p-6 bg-gray-50 dark:bg-gray-300/5 rounded-2xl">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300 mb-4">
-                  Need immediate assistance?
+                {page.box_head5}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Our customer support team is available to help you with urgent inquiries 
-                  and quick questions about our services.
+                {page.box_text5}
                 </p>
                 <div className="flex space-x-4">
                   <Button className="flex-1 bg-primary text-gray-200 hover:bg-primary-dark">
                     <Phone className="h-4 w-4 mr-2" />
-                    Call Now
+                    {page.hero_primary_button}
                   </Button>
                   <Button variant="ghost" className="border-2 flex-1 border-primary text-primary hover:bg-primary-dark hover:text-gray-200">
                     <Mail className="h-4 w-4 mr-2" />
-                    Email
+                    {page.hero_secondary_button}
                   </Button>
                 </div>
               </div>
@@ -318,11 +414,10 @@ export default function ContactPage() {
           <div className="mx-auto max-w-2xl lg:text-center mb-16">
             <h2 className="text-base font-semibold leading-7 text-primary dark:text-primary-light">Find Us</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-300 sm:text-4xl">
-              Visit our office
+            {page.body_heading3}
             </p>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
-              Located in the heart of Lagos business district, our office is easily 
-              accessible and ready to welcome you.
+            {page.text}
             </p>
           </div>
           
@@ -346,9 +441,9 @@ export default function ContactPage() {
       <div className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center mb-16">
-            <h2 className="text-base font-semibold leading-7 text-primary dark:text-primary-light">FAQ</h2>
+            <h2 className="text-base font-semibold leading-7 text-primary dark:text-primary-light">{page.body_sub_heading4}</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-300 sm:text-4xl">
-              Frequently asked questions
+            {page.body_heading4}
             </p>
           </div>
           
@@ -356,43 +451,37 @@ export default function ContactPage() {
             <div className="space-y-8">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300 mb-3">
-                  What documents do I need to apply for bus financing?
+                {page.box_head}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  You&apos;ll need your business registration documents, financial statements, 
-                  driver&apos;s license, and proof of income. Our team will provide a complete 
-                  checklist during your initial consultation.
+                {page.box_text}
                 </p>
               </div>
               
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300 mb-3">
-                  How long does the approval process take?
+                {page.box_head2}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Typically, we can provide approval within 2-3 business days for complete 
-                  applications. The entire process from application to funding usually takes 
-                  1-2 weeks.
+                {page.box_text2}
                 </p>
               </div>
               
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300 mb-3">
-                  What types of buses do you finance?
+                {page.box_head3}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  We finance all types of buses including minibuses, coaches, school buses, 
-                  and luxury buses. We work with both new and used vehicles from reputable manufacturers.
+                {page.box_text3}
                 </p>
               </div>
               
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300 mb-3">
-                  Do you offer refinancing options?
+                {page.box_head4}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Yes, we offer refinancing solutions for existing bus loans. This can help 
-                  you get better rates or more favorable terms. Contact us to discuss your options.
+                {page.box_text4}
                 </p>
               </div>
             </div>
