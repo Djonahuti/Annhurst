@@ -66,6 +66,8 @@ interface Page {
   box_text8: string | null
   box_head9: string | null
   box_text9: string | null
+  hp?: string[] | null
+  fm?: string[] | null
 }
 
 type FormData = Partial<Page>
@@ -114,7 +116,7 @@ export default function PageEdit() {
     }
   }
 
-  const handleChange = (field: string, value: string | boolean) => {
+  const handleChange = (field: string, value: string | boolean | string[]) => {
     setFormData((prev: FormData) => ({ ...prev, [field]: value } as FormData))
   }
 

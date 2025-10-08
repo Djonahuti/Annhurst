@@ -66,13 +66,15 @@ interface Page {
   box_text8: string | null
   box_head9: string | null
   box_text9: string | null
+  hp?: string[] | null
+  fm?: string[] | null
 }
 
 type FormData = Partial<Page>
 
 interface AccordionPageProps {
   formData: FormData
-  handleChange: (field: string, value: string | boolean) => void
+  handleChange: (field: string, value: string | boolean | string[]) => void
 }
 
 export default function AccordionPage({ formData, handleChange }: AccordionPageProps) {

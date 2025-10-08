@@ -71,7 +71,7 @@ type FormData = Partial<Page>
 
 interface AccordionPageProps {
   formData: FormData
-  handleChange: (field: string, value: string | boolean) => void
+  handleChange: (field: string, value: string | boolean | string[]) => void
 }
 
 export default function AccordionServices({ formData, handleChange }: AccordionPageProps) {
@@ -136,7 +136,7 @@ export default function AccordionServices({ formData, handleChange }: AccordionP
                 onChange={(e) => {
                   const updated = [...(formData.hp || [])]
                   updated[index] = e.target.value
-                  handleChange('hp', updated as any)
+                  handleChange('hp', updated)
                 }}
               />
               <Button
@@ -144,7 +144,7 @@ export default function AccordionServices({ formData, handleChange }: AccordionP
                 size="icon"
                 onClick={() => {
                   const updated = (formData.hp || []).filter((_, i) => i !== index)
-                  handleChange('hp', updated as any)
+                  handleChange('hp', updated)
                 }}
               >
                 ✕
@@ -154,7 +154,7 @@ export default function AccordionServices({ formData, handleChange }: AccordionP
 
           <Button
             variant="outline"
-            onClick={() => handleChange('hp', [...(formData.hp || []), ''] as any)}
+            onClick={() => handleChange('hp', [...(formData.hp || []), ''])}
           >
             + Add Features
           </Button>
@@ -183,7 +183,7 @@ export default function AccordionServices({ formData, handleChange }: AccordionP
                 onChange={(e) => {
                   const updated = [...(formData.fm || [])]
                   updated[index] = e.target.value
-                  handleChange('fm', updated as any)
+                  handleChange('fm', updated)
                 }}
               />
               <Button
@@ -191,7 +191,7 @@ export default function AccordionServices({ formData, handleChange }: AccordionP
                 size="icon"
                 onClick={() => {
                   const updated = (formData.fm || []).filter((_, i) => i !== index)
-                  handleChange('fm', updated as any)
+                  handleChange('fm', updated)
                 }}
               >
                 ✕
@@ -201,7 +201,7 @@ export default function AccordionServices({ formData, handleChange }: AccordionP
 
           <Button
             variant="outline"
-            onClick={() => handleChange('fm', [...(formData.fm || []), ''] as any)}
+            onClick={() => handleChange('fm', [...(formData.fm || []), ''])}
           >
             + Add Features
           </Button>
