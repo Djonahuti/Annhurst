@@ -2,6 +2,7 @@
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
 
 interface Page {
   id: string
@@ -62,6 +63,8 @@ interface Page {
   box_text8: string | null
   box_head9: string | null
   box_text9: string | null
+  hp: string[] | null
+  fm: string[] | null  
 }
 
 type FormData = Partial<Page>
@@ -81,7 +84,6 @@ export default function AccordionServices({ formData, handleChange }: AccordionP
           <Input placeholder="Title" value={formData.title || ''} onChange={(e) => handleChange('title', e.target.value)} />
           <Input placeholder="Slug" value={formData.slug || ''} onChange={(e) => handleChange('slug', e.target.value)} />
           <Textarea placeholder="Meta Description" value={formData.meta_description || ''} onChange={(e) => handleChange('meta_description', e.target.value)} />
-          <Textarea placeholder="Main Text" value={formData.text || ''} onChange={(e) => handleChange('text', e.target.value)} rows={5} />
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -99,85 +101,156 @@ export default function AccordionServices({ formData, handleChange }: AccordionP
         <AccordionContent className="grid grid-cols-2 gap-4">
           <Input placeholder="Hero Big Black" value={formData.hero_big_black || ''} onChange={(e) => handleChange('hero_big_black', e.target.value)} />
           <Input placeholder="Hero Big Primary" value={formData.hero_big_primary || ''} onChange={(e) => handleChange('hero_big_primary', e.target.value)} />
-          <Textarea placeholder="Hero Text" value={formData.hero_text || ''} onChange={(e) => handleChange('hero_text', e.target.value)} />
-          <Input placeholder="Hero Primary Button" value={formData.hero_primary_button || ''} onChange={(e) => handleChange('hero_primary_button', e.target.value)} />
-          <Input placeholder="Hero Secondary Button" value={formData.hero_secondary_button || ''} onChange={(e) => handleChange('hero_secondary_button', e.target.value)} />
-          <Input placeholder="Hero Year" value={formData.hero_year || ''} onChange={(e) => handleChange('hero_year', e.target.value)} />
-          <Input placeholder="Hero Year Span" value={formData.hero_year_span || ''} onChange={(e) => handleChange('hero_year_span', e.target.value)} />
-          <Input placeholder="Hero 100" value={formData.hero_100 || ''} onChange={(e) => handleChange('hero_100', e.target.value)} />
-          <Input placeholder="Hero 100 Span" value={formData.hero_100_span || ''} onChange={(e) => handleChange('hero_100_span', e.target.value)} />
-          <Input placeholder="Hero 24" value={formData.hero_24 || ''} onChange={(e) => handleChange('hero_24', e.target.value)} />
-          <Input placeholder="Hero 24 Span" value={formData.hero_24_span || ''} onChange={(e) => handleChange('hero_24_span', e.target.value)} />
+          <Textarea placeholder="Hero Big Primary" value={formData.hero_text || ''} onChange={(e) => handleChange('hero_text', e.target.value)} />
         </AccordionContent>
       </AccordionItem>
 
-      {/* Body Section */}
+      {/* Main Services */}
       <AccordionItem value="body">
-        <AccordionTrigger>Body Section</AccordionTrigger>
+        <AccordionTrigger>Body</AccordionTrigger>
         <AccordionContent className="grid grid-cols-2 gap-4">
-          <Input placeholder="Body Heading" value={formData.body_heading || ''} onChange={(e) => handleChange('body_heading', e.target.value)} />
           <Input placeholder="Body Sub Heading" value={formData.body_sub_heading || ''} onChange={(e) => handleChange('body_sub_heading', e.target.value)} />
+          <Input placeholder="Body Heading" value={formData.body_heading || ''} onChange={(e) => handleChange('body_heading', e.target.value)} />          
           <Textarea placeholder="Body First Text" value={formData.body_first_text || ''} onChange={(e) => handleChange('body_first_text', e.target.value)} />
-          <Textarea placeholder="Body Second Text" value={formData.body_second_text || ''} onChange={(e) => handleChange('body_second_text', e.target.value)} />
-          <Input placeholder="Body Heading 2" value={formData.body_heading2 || ''} onChange={(e) => handleChange('body_heading2', e.target.value)} />
-          <Input placeholder="Body Sub Heading 2" value={formData.body_sub_heading2 || ''} onChange={(e) => handleChange('body_sub_heading2', e.target.value)} />
-          <Input placeholder="Body Heading 3" value={formData.body_heading3 || ''} onChange={(e) => handleChange('body_heading3', e.target.value)} />
-          <Input placeholder="Body Sub Heading 3" value={formData.body_sub_heading3 || ''} onChange={(e) => handleChange('body_sub_heading3', e.target.value)} />
-          <Input placeholder="Body Heading 4" value={formData.body_heading4 || ''} onChange={(e) => handleChange('body_heading4', e.target.value)} />
-          <Input placeholder="Body Sub Heading 4" value={formData.body_sub_heading4 || ''} onChange={(e) => handleChange('body_sub_heading4', e.target.value)} />
         </AccordionContent>
       </AccordionItem>
 
-      {/* Box Features */}
-      <AccordionItem value="boxes">
-        <AccordionTrigger>Box Features</AccordionTrigger>
+      {/* Higher Purchase */}
+      <AccordionItem value="hp">
+        <AccordionTrigger>HP Service</AccordionTrigger>
         <AccordionContent className="grid grid-cols-2 gap-4">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className="space-y-2">
+        <div className="grid grid-cols-2 gap-4">
+          <Input placeholder="Body Second Text" value={formData.box_head || ''} onChange={(e) => handleChange('box_head', e.target.value)} />
+          <Textarea placeholder="Body Heading 2" value={formData.box_text || ''} onChange={(e) => handleChange('box_text', e.target.value)} />
+          <Input placeholder="Body Heading 3" value={formData.text || ''} onChange={(e) => handleChange('text', e.target.value)} />
+          <Input placeholder="Body Sub Heading 3" value={formData.hero_primary_button || ''} onChange={(e) => handleChange('hero_primary_button', e.target.value)} />
+        </div>
+
+        <div className="space-y-2 mt-4">
+          <h4 className="font-semibold text-sm">HP Features</h4>
+          {(formData.hp || []).map((item, index) => (
+            <div key={index} className="flex items-center space-x-2">
               <Input
-                placeholder={`Box Head ${i+1}`}
-                value={formData[`box_head${i+1}` as keyof typeof formData] as string || ''}
-                onChange={(e) => handleChange(`box_head${i+1}`, e.target.value)}
+                placeholder={`HP Item ${index + 1}`}
+                value={item}
+                onChange={(e) => {
+                  const updated = [...(formData.hp || [])]
+                  updated[index] = e.target.value
+                  handleChange('hp', updated as any)
+                }}
               />
-              <Textarea
-                placeholder={`Box Text ${i+1}`}
-                value={formData[`box_text${i+1}` as keyof typeof formData] as string || ''}
-                onChange={(e) => handleChange(`box_text${i+1}`, e.target.value)}
-              />
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={() => {
+                  const updated = (formData.hp || []).filter((_, i) => i !== index)
+                  handleChange('hp', updated as any)
+                }}
+              >
+                ✕
+              </Button>
             </div>
           ))}
+
+          <Button
+            variant="outline"
+            onClick={() => handleChange('hp', [...(formData.hp || []), ''] as any)}
+          >
+            + Add Features
+          </Button>
+        </div>
         </AccordionContent>
       </AccordionItem>
 
-      {/* Team Section */}
+      {/* Fleet Management */}
+      <AccordionItem value="fm">
+        <AccordionTrigger>Fleet Management</AccordionTrigger>
+        <AccordionContent className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4">
+          <Input placeholder="Body Second Text" value={formData.box_head2 || ''} onChange={(e) => handleChange('box_head2', e.target.value)} />
+          <Textarea placeholder="Body Heading 2" value={formData.box_text2 || ''} onChange={(e) => handleChange('box_text2', e.target.value)} />
+          <Input placeholder="Body Heading 3" value={formData.hero_year || ''} onChange={(e) => handleChange('hero_year', e.target.value)} />
+          <Input placeholder="Body Sub Heading 3" value={formData.hero_secondary_button || ''} onChange={(e) => handleChange('hero_secondary_button', e.target.value)} />
+        </div>
+
+        <div className="space-y-2 mt-4">
+          <h4 className="font-semibold text-sm">Fleet Management</h4>
+          {(formData.fm || []).map((item, index) => (
+            <div key={index} className="flex items-center space-x-2">
+              <Input
+                placeholder={`FM Item ${index + 1}`}
+                value={item}
+                onChange={(e) => {
+                  const updated = [...(formData.fm || [])]
+                  updated[index] = e.target.value
+                  handleChange('fm', updated as any)
+                }}
+              />
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={() => {
+                  const updated = (formData.fm || []).filter((_, i) => i !== index)
+                  handleChange('fm', updated as any)
+                }}
+              >
+                ✕
+              </Button>
+            </div>
+          ))}
+
+          <Button
+            variant="outline"
+            onClick={() => handleChange('fm', [...(formData.fm || []), ''] as any)}
+          >
+            + Add Features
+          </Button>
+        </div>        
+        </AccordionContent>
+      </AccordionItem>     
+
+      {/* Process Section */}
+      <AccordionItem value="boxes">
+        <AccordionTrigger>Process Section</AccordionTrigger>
+        <AccordionContent className="grid grid-cols-2 gap-4">
+          <Input placeholder="Body Second Text" value={formData.box_head3 || ''} onChange={(e) => handleChange('box_head3', e.target.value)} />
+          <Input placeholder="Body Heading 2" value={formData.box_text3 || ''} onChange={(e) => handleChange('box_text3', e.target.value)} />
+          <Input placeholder="Body Second Text" value={formData.box_head4 || ''} onChange={(e) => handleChange('box_head4', e.target.value)} />
+          <Input placeholder="Body Heading 2" value={formData.box_text4 || ''} onChange={(e) => handleChange('box_text4', e.target.value)} />
+          <Input placeholder="Body Second Text" value={formData.box_head5 || ''} onChange={(e) => handleChange('box_head5', e.target.value)} />
+          <Input placeholder="Body Heading 2" value={formData.box_text5 || ''} onChange={(e) => handleChange('box_text5', e.target.value)} />
+          <Input placeholder="Body Second Text" value={formData.box_head6 || ''} onChange={(e) => handleChange('box_head6', e.target.value)} />
+          <Input placeholder="Body Heading 2" value={formData.box_text6 || ''} onChange={(e) => handleChange('box_text6', e.target.value)} />          
+        </AccordionContent>
+      </AccordionItem>
+
+      {/* Features */}
       <AccordionItem value="team">
-        <AccordionTrigger>Team Section</AccordionTrigger>
+        <AccordionTrigger>Features</AccordionTrigger>
         <AccordionContent className="grid grid-cols-3 gap-4">
-          {Array.from({ length: 3 }).map((_, i) => {
-            const imgField = i === 0 ? 'team_img' : `team_img${i+1}`
-            const textField = i === 0 ? 'team_text' : `team_text${i+1}`
-            const roleField = i === 0 ? 'team_role' : `team_role${i+1}`
-            
-            return (
-              <div key={i} className="space-y-2">
-                <Input
-                  placeholder={`Team Img ${i+1}`}
-                  value={formData[imgField as keyof typeof formData] as string || ''}
-                  onChange={(e) => handleChange(imgField, e.target.value)}
-                />
-                <Input
-                  placeholder={`Team Text ${i+1}`}
-                  value={formData[textField as keyof typeof formData] as string || ''}
-                  onChange={(e) => handleChange(textField, e.target.value)}
-                />
-                <Input
-                  placeholder={`Team Role ${i+1}`}
-                  value={formData[roleField as keyof typeof formData] as string || ''}
-                  onChange={(e) => handleChange(roleField, e.target.value)}
-                />
-              </div>
-            )
-          })}
+        <Input placeholder="Body Second Text" value={formData.body_sub_heading3 || ''} onChange={(e) => handleChange('body_sub_heading3', e.target.value)} />
+          <Input placeholder="Body Heading 2" value={formData.body_heading3 || ''} onChange={(e) => handleChange('body_heading3', e.target.value)} />
+          <Input placeholder="Body Second Text" value={formData.box_head7 || ''} onChange={(e) => handleChange('box_head7', e.target.value)} />
+          <Input placeholder="Body Heading 2" value={formData.box_text7 || ''} onChange={(e) => handleChange('box_text7', e.target.value)} />
+          <Input placeholder="Body Second Text" value={formData.box_head8 || ''} onChange={(e) => handleChange('box_head8', e.target.value)} />
+          <Input placeholder="Body Heading 2" value={formData.box_text8 || ''} onChange={(e) => handleChange('box_text8', e.target.value)} />
+          <Input placeholder="Body Second Text" value={formData.box_head9 || ''} onChange={(e) => handleChange('box_head9', e.target.value)} />
+          <Input placeholder="Body Heading 2" value={formData.box_text9 || ''} onChange={(e) => handleChange('box_text9', e.target.value)} />  
+        </AccordionContent>
+      </AccordionItem>
+
+      {/* Additional Services */}
+      <AccordionItem value="aservice">
+        <AccordionTrigger>Additional Services</AccordionTrigger>
+        <AccordionContent className="space-y-4">
+          <Input placeholder="Section Head" value={formData.body_sub_heading4 || ''} onChange={(e) => handleChange('body_sub_heading4', e.target.value)} />
+          <Input placeholder="Section Text" value={formData.body_heading4 || ''} onChange={(e) => handleChange('body_heading4', e.target.value)} />
+          <Input placeholder="Section Primary Btn" value={formData.team_role || ''} onChange={(e) => handleChange('team_role', e.target.value)} />
+          <Input placeholder="Section Secondary Btn" value={formData.team_text || ''} onChange={(e) => handleChange('team_text', e.target.value)} />
+          <Input placeholder="Body Second Text" value={formData.team_role2 || ''} onChange={(e) => handleChange('team_role2', e.target.value)} />
+          <Input placeholder="Body Heading 2" value={formData.team_text2 || ''} onChange={(e) => handleChange('team_text2', e.target.value)} />
+          <Input placeholder="Body Second Text" value={formData.team_role3 || ''} onChange={(e) => handleChange('team_role3', e.target.value)} />
+          <Input placeholder="Body Heading 2" value={formData.team_text3 || ''} onChange={(e) => handleChange('team_text3', e.target.value)} />            
         </AccordionContent>
       </AccordionItem>
 
@@ -190,7 +263,7 @@ export default function AccordionServices({ formData, handleChange }: AccordionP
           <Input placeholder="Section Primary Btn" value={formData.section_primary_btn || ''} onChange={(e) => handleChange('section_primary_btn', e.target.value)} />
           <Input placeholder="Section Secondary Btn" value={formData.section_secondary_btn || ''} onChange={(e) => handleChange('section_secondary_btn', e.target.value)} />
         </AccordionContent>
-      </AccordionItem>
+      </AccordionItem>      
     </Accordion>
   )
 }
