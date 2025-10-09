@@ -149,7 +149,7 @@ export default function PageEdit() {
       </div>
 
       {/* Right: Preview Sidebar (iPhone 15 Pro Max Prototype) */}
-      <div className='hidden'>
+      <div className='hidden md:block'>
         <EditPhone page={formData} />
       </div>
 
