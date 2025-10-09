@@ -23,6 +23,8 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
+import AddDriver from "@/components/Shared/Admin/AddDriver";
+import Modal from "@/components/Modal";
 
 interface Driver {
   id: number;
@@ -82,7 +84,7 @@ export default function AdminDrivers() {
   const { supabase } = useSupabase();
   const { user, role } = useAuth();
   const router = useRouter();
-
+  const [isAddDriverModalOpen, setAddDriverModalOpen] = useState(false);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingDriver, setEditingDriver] = useState<Driver | null>(null);
@@ -279,6 +281,16 @@ export default function AdminDrivers() {
                 ))}
                 </SelectContent>
               </Select>
+              <span className="p-3">
+                <Button
+                 className="text-gray-200 ml-auto"
+                 onClick={() => {
+                  setAddDriverModalOpen(true);
+                 }}
+                >
+                  Add Driver
+                </Button>
+              </span>
             </div>
           </div>
         </CardHeader>
@@ -443,6 +455,11 @@ export default function AdminDrivers() {
           )}
         </CardContent>
       </Card>
+
+      {/* Add Driver Modal */}
+      <Modal isOpen2={isAddDriverModalOpen} onClose={() => setAddDriverModalOpen(false)}>
+        <AddDriver />
+      </Modal>
     </div>
   );
 }
