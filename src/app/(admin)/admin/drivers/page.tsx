@@ -49,11 +49,18 @@ interface DriverQueryRow {
     id: number;
     bus_code: string;
     plate_no: string;
-    coordinators?: {
-      id: number;
-      name: string;
-      email: string;
-    }[];
+    coordinators?:
+      | {
+          id: number;
+          name: string;
+          email: string;
+        }
+      | {
+          id: number;
+          name: string;
+          email: string;
+        }[]
+      | null;
   }[];
 }
 
@@ -114,18 +121,26 @@ export default function AdminDrivers() {
       return;
     }
 
-    const formatted = (data || []).map((d: DriverQueryRow) => ({
-      id: d.id,
-      name: d.name,
-      email: d.email,
-      phone: d.phone,
-      address: d.address,
-      bus_id: d.buses?.[0]?.id || null,
-      bus_code: d.buses?.[0]?.bus_code || null,
-      plate_no: d.buses?.[0]?.plate_no || null,
-      coordinator_id: d.buses?.[0]?.coordinators?.[0]?.id || null,
-      coordinator_name: d.buses?.[0]?.coordinators?.[0]?.name || null,
-    }));
+    const rows: DriverQueryRow[] = (data ?? []) as unknown as DriverQueryRow[];
+    const formatted = rows.map((d) => {
+      const firstBus = d.buses?.[0];
+      const coordinators = firstBus?.coordinators;
+      const coordinator = Array.isArray(coordinators)
+        ? coordinators[0] ?? null
+        : coordinators ?? null;
+      return {
+        id: d.id,
+        name: d.name,
+        email: d.email,
+        phone: d.phone,
+        address: d.address,
+        bus_id: firstBus?.id ?? null,
+        bus_code: firstBus?.bus_code ?? null,
+        plate_no: firstBus?.plate_no ?? null,
+        coordinator_id: coordinator?.id ?? null,
+        coordinator_name: coordinator?.name ?? null,
+      };
+    });
 
     setDrivers(sortDrivers(formatted, sortBy));
     setLoading(false);

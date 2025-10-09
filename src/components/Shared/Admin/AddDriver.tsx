@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Progress } from '@/components/ui/progress';
 import { motion, AnimatePresence } from 'framer-motion';
+import Loader from '@/components/Loader';
 
 const schema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -164,7 +165,7 @@ export default function AddDriver() {
                   {errors.name?.message && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                   <Button
                     type="button"
-                    className="w-full mt-4"
+                    className="w-full mt-4 text-gray-200"
                     onClick={() => getValues('name') && setStep(2)}
                   >
                     Next
@@ -181,7 +182,7 @@ export default function AddDriver() {
                     <Button type="button" variant="outline" onClick={() => setStep(1)}>
                       Back
                     </Button>
-                    <Button type="button" onClick={() => getValues('email') && setStep(3)}>
+                    <Button className='text-gray-200' type="button" onClick={() => getValues('email') && setStep(3)}>
                       Next
                     </Button>
                   </div>
@@ -197,7 +198,7 @@ export default function AddDriver() {
                     <Button type="button" variant="outline" onClick={() => setStep(2)}>
                       Back
                     </Button>
-                    <Button type="button" onClick={() => getValues('password') && setStep(4)}>
+                    <Button className='text-gray-200' type="button" onClick={() => getValues('password') && setStep(4)}>
                       Next
                     </Button>
                   </div>
@@ -213,7 +214,7 @@ export default function AddDriver() {
                     <Button type="button" variant="outline" onClick={() => setStep(3)}>
                       Back
                     </Button>
-                    <Button type="button" onClick={() => getValues('dob') && setStep(5)}>
+                    <Button className='text-gray-200' type="button" onClick={() => getValues('dob') && setStep(5)}>
                       Next
                     </Button>
                   </div>
@@ -229,7 +230,7 @@ export default function AddDriver() {
                     <Button type="button" variant="outline" onClick={() => setStep(4)}>
                       Back
                     </Button>
-                    <Button type="button" onClick={() => getValues('nin') && setStep(6)}>
+                    <Button className='text-gray-200' type="button" onClick={() => getValues('nin') && setStep(6)}>
                       Next
                     </Button>
                   </div>
@@ -258,14 +259,14 @@ export default function AddDriver() {
                       )}
                     </div>
                   ))}
-                  <Button type="button" onClick={addPhoneInput} className="mt-2">
+                  <Button type="button" onClick={addPhoneInput} className="mt-2 text-gray-200">
                     Add Phone Number
                   </Button>
                   <div className="flex justify-between mt-4">
                     <Button type="button" variant="outline" onClick={() => setStep(5)}>
                       Back
                     </Button>
-                    <Button onClick={() => setStep(7)}>Next</Button>
+                    <Button className='text-gray-200' onClick={() => setStep(7)}>Next</Button>
                   </div>
                 </div>
               )}
@@ -292,7 +293,7 @@ export default function AddDriver() {
                       )}
                     </div>
                   ))}
-                  <Button type="button" onClick={addAddressInput} className="mt-2">
+                  <Button type="button" onClick={addAddressInput} className="mt-2 text-gray-200">
                     Add Address
                   </Button>
                   <div className="flex justify-between mt-4">
@@ -300,7 +301,7 @@ export default function AddDriver() {
                       Back
                     </Button>
                     <Button type="submit" className="text-gray-200" disabled={loading}>
-                      {loading ? 'Submiting...' : 'Submit'}
+                      {loading ? <Loader /> : 'Submit'}
                     </Button>
                   </div>
                 </div>
