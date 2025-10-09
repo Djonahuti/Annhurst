@@ -97,7 +97,7 @@ export default function ViewUsers() {
               <TableBody>
                 {drivers.map((d) => {
                   return (
-                    <TableRow key={d.id}>
+                    <TableRow key={d.id} className="hover:bg-red-50 hover:text-primary">
                       <TableCell>{d.name}</TableCell>
                       <TableCell>{d.email}</TableCell>
                       <TableCell>{Array.isArray(d.phone) ? d.phone.join(", ") : d.phone}</TableCell>
@@ -134,7 +134,7 @@ export default function ViewUsers() {
               <TableBody>
                 {coordinators.map((c) => {
                   return (
-                    <TableRow key={c.id}>
+                    <TableRow key={c.id} className="hover:bg-red-50 hover:text-primary">
                       <TableCell>{c.name}</TableCell>
                       <TableCell>{c.email}</TableCell>
                       <TableCell>{Array.isArray(c.phone) ? c.phone.join(", ") : c.phone}</TableCell>
@@ -169,7 +169,7 @@ export default function ViewUsers() {
               <TableBody>
                 {admins.map((a) => {
                   return (
-                    <TableRow key={a.id}>
+                    <TableRow key={a.id} className="hover:bg-red-50 hover:text-primary">
                       <TableCell>{a.name}</TableCell>
                       <TableCell>{a.email}</TableCell>
                       <TableCell>{a.role}</TableCell>

@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback } from "react";
 import { useSupabase } from "@/contexts/SupabaseContext";
-import { useAuth } from "@/contexts/AuthContext";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -89,7 +88,6 @@ type DriverFormValues = z.infer<typeof driverSchema>;
 
 export default function AdminDrivers() {
   const { supabase } = useSupabase();
-  const { user, role } = useAuth();
   const router = useRouter();
   const [isAddDriverModalOpen, setAddDriverModalOpen] = useState(false);
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -163,14 +161,10 @@ export default function AdminDrivers() {
   }, [supabase]);
 
   useEffect(() => {
-    if (!user || role !== "admin") {
-      router.push("/login");
-      return;
-    }
     fetchDrivers();
     fetchBuses();
     fetchCoordinators();
-  }, [user, role, router, fetchDrivers, fetchBuses, fetchCoordinators]);
+  }, [router, fetchDrivers, fetchBuses, fetchCoordinators]);
 
   const handleEdit = (driver: Driver) => {
     setEditingDriver(driver);
@@ -327,7 +321,7 @@ export default function AdminDrivers() {
               </TableHeader>
               <TableBody>
                 {visibleDrivers.map((d) => (
-                  <TableRow key={d.id}>
+                  <TableRow key={d.id} className="hover:bg-red-50 hover:text-primary">
                     <TableCell>{d.name || "N/A"}</TableCell>
                     <TableCell>{d.email || "N/A"}</TableCell>
                     <TableCell>{d.phone?.join(", ") || "N/A"}</TableCell>
@@ -345,7 +339,7 @@ export default function AdminDrivers() {
                             Edit
                           </Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="bg-white dark:bg-gray-900">
                           <DialogHeader>
                             <DialogTitle>Edit Driver</DialogTitle>
                           </DialogHeader>
