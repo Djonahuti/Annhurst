@@ -255,7 +255,7 @@ export default function HomePage() {
                 </Button>
               </Link>
               <Link href="/services">
-                <Button variant="ghost" size="lg" className="border-2 border-white text-gray-200 hover:bg-gray-200 hover:text-primary hover:border-none transform transition duration-300 ease-in-out hover:scale-105">
+                <Button variant="ghost" size="lg" className="border-2 border-white text-gray-200 dark:hover:bg-gray-200 dark:hover:text-primary hover:bg-gray-200 hover:text-primary hover:border-none transform transition duration-300 ease-in-out hover:scale-105">
                   {page.section_secondary_btn}
                 </Button>
               </Link>

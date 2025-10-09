@@ -277,7 +277,7 @@ export default function AdminDrivers() {
                 <SelectTrigger className="w-30">
                   <SelectValue placeholder="Select coordinator" />
                 </SelectTrigger>
-                <SelectContent className="border rounded p-2">
+                <SelectContent className="border rounded p-2 bg-white dark:bg-gray-900">
                 <SelectItem value="all">All</SelectItem>
                 {coordinators.map((c) => (
                   <SelectItem
@@ -332,9 +332,10 @@ export default function AdminDrivers() {
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button
-                            variant="outline"
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleEdit(d)}
+                            className="border-2 flex-1 border-primary dark:border-primary-light text-primary dark:text-primary-light hover:bg-primary-dark dark:hover:bg-primary-light hover:text-gray-200 dark:hover:text-gray-100"
                           >
                             Edit
                           </Button>
@@ -400,45 +401,79 @@ export default function AdminDrivers() {
                                   </FormItem>
                                 )}
                               />
+
                               <FormField
                                 control={form.control}
                                 name="bus_id"
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Assigned Bus</FormLabel>
-                                    <select
+                                    <Select
                                       value={field.value || ""}
-                                      onChange={(e) => field.onChange(e.target.value)}
-                                      className="w-full border rounded p-2"
+                                      onValueChange={field.onChange}
                                     >
-                                      <option value="">Unassigned</option>
-                                      {buses.map((bus) => (
-                                        <option key={bus.id} value={bus.id}>
-                                          {bus.bus_code} ({bus.plate_no})
-                                        </option>
-                                      ))}
-                                    </select>
+                                      <FormControl>
+                                        <SelectTrigger className="w-full">
+                                          <SelectValue placeholder="Unassigned" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className='bg-white dark:bg-gray-900'>
+                                        <SelectItem
+                                         value="N/A"
+                                         className="data-[state=checked]:bg-primary data-[state=checked]:text-gray-200 data-[highlighted]:bg-primary-light data-[highlighted]:text-gray-200"
+                                        >
+                                          Unassigned
+                                        </SelectItem>
+                                        {buses.map((bus) => (
+                                          <SelectItem
+                                           key={bus.id} 
+                                           value={String(bus.id)}
+                                           className="data-[state=checked]:bg-primary data-[state=checked]:text-gray-200 data-[highlighted]:bg-primary-light data-[highlighted]:text-gray-200"
+                                          >
+                                            {bus.bus_code} ({bus.plate_no})
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
                                   </FormItem>
                                 )}
                               />
+
                               <FormField
                                 control={form.control}
                                 name="coordinator_id"
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Assigned Coordinator</FormLabel>
-                                    <select
+                                    <Select
                                       value={field.value || ""}
-                                      onChange={(e) => field.onChange(e.target.value)}
-                                      className="w-full border rounded p-2"
+                                      onValueChange={field.onChange}
                                     >
-                                      <option value="">Unassigned</option>
-                                      {coordinators.map((c) => (
-                                        <option key={c.id} value={c.id}>
-                                          {c.name} ({c.email})
-                                        </option>
-                                      ))}
-                                    </select>
+                                      <FormControl>
+                                        <SelectTrigger className="w-full">
+                                          <SelectValue placeholder="Unassigned" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className='bg-white dark:bg-gray-900'>
+                                        <SelectItem
+                                         value="N/A"
+                                         className="data-[state=checked]:bg-primary data-[state=checked]:text-gray-200 data-[highlighted]:bg-primary-light data-[highlighted]:text-gray-200"
+                                        >
+                                          Unassigned
+                                        </SelectItem>
+                                        {coordinators.map((c) => (
+                                          <SelectItem
+                                           key={c.id} 
+                                           value={String(c.id)}
+                                           className="data-[state=checked]:bg-primary data-[state=checked]:text-gray-200 data-[highlighted]:bg-primary-light data-[highlighted]:text-gray-200"
+                                          >
+                                            {c.name} ({c.email})
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
                                   </FormItem>
                                 )}
                               />
@@ -450,7 +485,7 @@ export default function AdminDrivers() {
                                 >
                                   Cancel
                                 </Button>
-                                <Button type="submit">Save</Button>
+                                <Button type="submit" className="text-gray-200">Save</Button>
                               </div>
                             </form>
                           </Form>
