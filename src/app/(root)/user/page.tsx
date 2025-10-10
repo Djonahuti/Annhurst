@@ -164,12 +164,20 @@ export default function UserProfile() {
 
               <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuItem asChild>
-                  <Link href="https://www.google.com/url?q=https%3A%2F%2Fmonitor.concept-nova.com%2Fobjects&sa=D&sntz=1&usg=AOvVaw01M4s_3W-IWNHk1xNNnUbO">
+                  <Link
+                   href="https://www.google.com/url?q=https%3A%2F%2Fmonitor.concept-nova.com%2Fobjects&sa=D&sntz=1&usg=AOvVaw01M4s_3W-IWNHk1xNNnUbO"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                  >
                     Tracker
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="https://www.google.com/url?q=https%3A%2F%2Fmonitor.autotrack.ng%2Fobjects&sa=D&sntz=1&usg=AOvVaw13LwsAMr7YvUbnjCnMaJSS">
+                  <Link
+                   href="https://www.google.com/url?q=https%3A%2F%2Fmonitor.autotrack.ng%2Fobjects&sa=D&sntz=1&usg=AOvVaw13LwsAMr7YvUbnjCnMaJSS"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                  >
                     New Tracker
                   </Link>
                 </DropdownMenuItem>
@@ -178,7 +186,11 @@ export default function UserProfile() {
             </p>
 
             <p>
-              <Link href="https://sites.google.com/annhurst-gsl.com/portal/home">
+              <Link
+               href="https://sites.google.com/annhurst-gsl.com/portal/home"
+               target="_blank"
+               rel="noopener noreferrer"
+              >
                 <Button size='sm' className='bg-primary text-gray-200 hover:bg-red-50 hover:text-primary'>
                   <RadioTower />Intranet
                 </Button>
