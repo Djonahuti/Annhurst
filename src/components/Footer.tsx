@@ -184,12 +184,12 @@ export default function Footer() {
             </Link>
 
             <Link
-             href="https://www.annhurst-gsl.com" 
+             href="https://annhurst-gsl.com" 
              className="text-center"
              target="_blank"
              rel="noopener noreferrer"
             >
-              <p className='mx-auto h-9 w-9 bg-gradient-to-b from-primary to-primary/80 shadow-md shadow-primary/30 rounded-full flex items-center justify-center relative overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-primary/50'>
+              <p className='mx-auto h-9 w-9 bg-gradient-to-b from-red-50 to-red-30/80 shadow-md shadow-primary/30 rounded-full flex items-center justify-center relative overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-red-30/50'>
                   {/* Glossy highlight overlay */}
                 <span
                   className="
