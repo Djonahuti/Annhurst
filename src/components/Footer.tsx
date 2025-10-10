@@ -4,6 +4,8 @@ import { Phone, Mail, MapPin } from 'lucide-react'
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import Image from 'next/image';
+import { IconBrandFacebook, IconBrandInstagram, IconBrandX } from '@tabler/icons-react';
+import { Avatar, AvatarImage } from './ui/avatar';
 
 type Settings = {
   logo?: string;
@@ -119,6 +121,89 @@ export default function Footer() {
                 <li key={i}>{srv}</li>
               ))}
             </ul>
+          </div>
+          <div className="flex justify-item-between space-x-3">
+            <Link
+             href="https://www.google.com/url?q=https%3A%2F%2Fx.com%2Fi%2Fflow%2Flogin%3Fredirect_after_login%3D%252FAnnhurstGSL&sa=D&sntz=1&usg=AOvVaw1Giv4tsGAQEf_T9NZfskb6" 
+             className="text-center"
+             target="_blank"
+             rel="noopener noreferrer"
+            >
+              <p className='mx-auto h-9 w-9 bg-gradient-to-b from-primary to-primary/80 shadow-md shadow-primary/30 rounded-full flex items-center justify-center relative overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-primary/50'>
+                  {/* Glossy highlight overlay */}
+                <span
+                  className="
+                    absolute inset-0
+                    bg-gradient-to-t from-transparent via-white/30 to-white/70
+                    opacity-40
+                    rounded-full
+                  "
+                ></span>
+                <IconBrandX stroke={2} className='h-5 w-5 text-white relative z-10' />
+              </p>
+            </Link>
+
+            <Link
+             href="https://www.google.com/url?q=https%3A%2F%2Fwww.facebook.com%2Fpeople%2FAnnhurst-Global-Services%2F100068235036574%2F&sa=D&sntz=1&usg=AOvVaw0NBD6id6iFRpsTTombFaB9" 
+             className="text-center"
+             target="_blank"
+             rel="noopener noreferrer"
+            >
+              <p className='mx-auto h-9 w-9 bg-gradient-to-b from-primary to-primary/80 shadow-md shadow-primary/30 rounded-full flex items-center justify-center relative overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-primary/50'>
+                  {/* Glossy highlight overlay */}
+                <span
+                  className="
+                    absolute inset-0
+                    bg-gradient-to-t from-transparent via-white/30 to-white/70
+                    opacity-40
+                    rounded-full
+                  "
+                ></span>
+                <IconBrandFacebook className='h-5 w-5 text-white relative z-10' />
+              </p>
+            </Link>
+
+            <Link
+             href="https://www.google.com/url?q=https%3A%2F%2Fwww.instagram.com%2Fannhurst_transport_services%2F&sa=D&sntz=1&usg=AOvVaw2m5MbDYkv50lCjndzSKwJU" 
+             className="text-center"
+             target="_blank"
+             rel="noopener noreferrer"
+            >
+              <p className='mx-auto h-9 w-9 bg-gradient-to-b from-primary to-primary/80 shadow-md shadow-primary/30 rounded-full flex items-center justify-center relative overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-primary/50'>
+                  {/* Glossy highlight overlay */}
+                <span
+                  className="
+                    absolute inset-0
+                    bg-gradient-to-t from-transparent via-white/30 to-white/70
+                    opacity-40
+                    rounded-full
+                  "
+                ></span>
+                <IconBrandInstagram stroke={2} className='h-5 w-5 text-white relative z-10' />
+              </p>
+            </Link>
+
+            <Link
+             href="https://www.annhurst-gsl.com" 
+             className="text-center"
+             target="_blank"
+             rel="noopener noreferrer"
+            >
+              <p className='mx-auto h-9 w-9 bg-gradient-to-b from-primary to-primary/80 shadow-md shadow-primary/30 rounded-full flex items-center justify-center relative overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-primary/50'>
+                  {/* Glossy highlight overlay */}
+                <span
+                  className="
+                    absolute inset-0
+                    bg-gradient-to-t from-transparent via-white/30 to-white/70
+                    opacity-40
+                    rounded-full
+                  "
+                ></span>
+                <Avatar className='h-8 w-8 relative z-10'>
+                  <AvatarImage src="/ann.png" alt="logo" />
+                </Avatar>
+              </p>
+            </Link>
           </div>
         </div>
 
