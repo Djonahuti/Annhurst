@@ -4,11 +4,12 @@ import Modal from "@/components/Modal";
 import Contact from "@/components/Shared/Contact";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSupabase } from "@/contexts/SupabaseContext";
-import { Mail, SendHorizontal } from "lucide-react";
+import { LocateFixed, Mail, RadioTower, SendHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -145,10 +146,45 @@ export default function UserProfile() {
             Welcome, {coordinator?.name || user?.email}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex justify-between">
+          <div className="mr-auto">
           <p>Role: Coordinator</p>
           <p>Email: {coordinator?.email}</p>
           {coordinator?.phone && <p>Phone: {coordinator.phone.join(', ')}</p>}
+          </div>
+          <div className="space-y-2">
+            <p>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="border-2 flex-1 border-primary dark:border-primary-light text-primary dark:text-primary-light hover:bg-primary-dark dark:hover:bg-primary-light hover:text-gray-200 dark:hover:text-gray-100">
+                  <LocateFixed className="mr-2 h-4 w-4" />
+                  Tracker
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem asChild>
+                  <Link href="https://www.google.com/url?q=https%3A%2F%2Fmonitor.concept-nova.com%2Fobjects&sa=D&sntz=1&usg=AOvVaw01M4s_3W-IWNHk1xNNnUbO">
+                    Tracker
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="https://www.google.com/url?q=https%3A%2F%2Fmonitor.autotrack.ng%2Fobjects&sa=D&sntz=1&usg=AOvVaw13LwsAMr7YvUbnjCnMaJSS">
+                    New Tracker
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            </p>
+
+            <p>
+              <Link href="https://sites.google.com/annhurst-gsl.com/portal/home">
+                <Button size='sm' className='bg-primary text-gray-200 hover:bg-red-50 hover:text-primary'>
+                  <RadioTower />Intranet
+                </Button>
+              </Link>
+            </p>
+          </div>
         </CardContent>
         <CardFooter className="flex justify-between">
           <Link href="/my-inbox" className="mr-auto">
@@ -184,7 +220,7 @@ export default function UserProfile() {
                     <TableCell>{bus.bus_code || 'N/A'}</TableCell>
                     <TableCell>{bus.plate_no || 'N/A'}</TableCell>
                     <TableCell>{bus.driver_name || 'N/A'}</TableCell>
-                    <TableCell>
+                    <TableCell className="space-x-2">
                       <Button
                         variant="outline"
                         size="sm"
