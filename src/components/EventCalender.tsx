@@ -22,7 +22,7 @@ export default function EventCalendar({ nextMeeting = new Date(2025, 9, 31), cla
         )}
       >
         {/* Month */}
-        <div className="text-center text-sm font-bold pt-3 tracking-widest z-10">
+        <div className="text-center text-md font-bold pt-3 tracking-widest z-10">
           {month}
         </div>
 
