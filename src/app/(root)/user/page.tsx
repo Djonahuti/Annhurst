@@ -1,5 +1,6 @@
 'use client'
 
+import EventCalendar from "@/components/EventCalender";
 import Modal from "@/components/Modal";
 import Contact from "@/components/Shared/Contact";
 import { Button } from "@/components/ui/button";
@@ -264,6 +265,11 @@ export default function UserProfile() {
             </Table>
           )}
         </CardContent>
+
+        <CardFooter className="flex justify-between">
+          <div className="text-2xl">Next End of the Month Meeting Date</div>
+          <EventCalendar />
+        </CardFooter>
       </Card>
       {/* Contact Modal */}
       <Modal isOpen2={isContactModalOpen} onClose={() => setContactModalOpen(false)}>
