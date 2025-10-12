@@ -189,18 +189,10 @@ export default function Footer() {
              target="_blank"
              rel="noopener noreferrer"
             >
-              <p className='mx-auto h-9 w-9 bg-gradient-to-b from-red-50 to-red-30/80 shadow-md shadow-primary/30 rounded-full flex items-center justify-center relative overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-red-30/50'>
-                  {/* Glossy highlight overlay */}
-                <span
-                  className="
-                    absolute inset-0
-                    bg-gradient-to-t from-transparent via-white/30 to-white/70
-                    opacity-40
-                    rounded-full
-                  "
-                ></span>
+              <p className='mx-auto h-9 w-9 bg-gray-200 shadow-md shadow-primary/30 rounded-full flex items-center justify-center relative overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-red-30/50'>
+
                 <Avatar className='h-8 w-8 relative z-10'>
-                  <AvatarImage src="/ann.png" alt="logo" />
+                  <AvatarImage src="/ann-logo.png" alt="logo" />
                 </Avatar>
               </p>
             </Link>
