@@ -124,7 +124,7 @@ export default function Footer() {
           </div>
           <div className="flex justify-item-between space-x-3">
             <Link
-             href="https://www.google.com/url?q=https%3A%2F%2Fx.com%2Fi%2Fflow%2Flogin%3Fredirect_after_login%3D%252FAnnhurstGSL&sa=D&sntz=1&usg=AOvVaw1Giv4tsGAQEf_T9NZfskb6" 
+             href="https://x.com/i/flow/login?redirect_after_login=%2FAnnhurstGSL" 
              className="text-center"
              target="_blank"
              rel="noopener noreferrer"
@@ -144,7 +144,7 @@ export default function Footer() {
             </Link>
 
             <Link
-             href="https://www.google.com/url?q=https%3A%2F%2Fwww.facebook.com%2Fpeople%2FAnnhurst-Global-Services%2F100068235036574%2F&sa=D&sntz=1&usg=AOvVaw0NBD6id6iFRpsTTombFaB9" 
+             href="https://web.facebook.com/people/Annhurst-Global-Services/100068235036574/?_rdc=1&_rdr#" 
              className="text-center"
              target="_blank"
              rel="noopener noreferrer"
@@ -164,7 +164,7 @@ export default function Footer() {
             </Link>
 
             <Link
-             href="https://www.google.com/url?q=https%3A%2F%2Fwww.instagram.com%2Fannhurst_transport_services%2F&sa=D&sntz=1&usg=AOvVaw2m5MbDYkv50lCjndzSKwJU" 
+             href="https://www.instagram.com/annhurst_transport_services/" 
              className="text-center"
              target="_blank"
              rel="noopener noreferrer"
