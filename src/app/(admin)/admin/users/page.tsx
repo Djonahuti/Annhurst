@@ -200,7 +200,7 @@ export default function ViewUsers() {
             </Table>
           </AccordionContent>
           ):(
-            <span className="text-gray-400 italic">You only have Read Access, You can't View Admins</span>
+            <span className="text-gray-400 italic">You only have Read Access, You can&apos;t View Admins</span>
           )}
         </AccordionItem>
       </Accordion>
