@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase/client'
 import { useParams, useRouter } from 'next/navigation'
 import EditPhone from '@/components/Shared/Admin/EditPhone'
 import AccordionPage from '@/components/AccordionPage'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface Page {
   id: string
@@ -73,9 +74,11 @@ interface Page {
 type FormData = Partial<Page>
 
 export default function PageEdit() {
+  const { adminRole } = useAuth();
   const params = useParams()
   const id = params.pageId
   const router = useRouter();
+  const canEdit = adminRole === 'admin' || adminRole === 'editor';
   const [formData, setFormData] = useState<FormData>({})
   const [isLoading, setIsLoading] = useState(true)
 
@@ -133,9 +136,9 @@ export default function PageEdit() {
       {/* Left: Edit Form */}
       <div className="flex-1 space-y-6 lg:max-w-3xl">
         <h1 className="text-2xl font-bold">{id === 'new' ? "Create Page" : "Edit Page"}</h1>
-        {id !== 'new' && (
-          <div className="text-sm text-gray-500">
-            Editing page ID: {id}
+        {adminRole == 'viewer' && (
+          <div className="text-md text-gray-500">
+            Note: <span className='text-sm text-red-500'>You only have view access</span>
           </div>
         )}
 
@@ -144,7 +147,13 @@ export default function PageEdit() {
         {/* Save Buttons */}
         <div className="flex space-x-4 pt-6">
           <Button variant="outline" onClick={() => router.push('/admin/pages')}>Cancel</Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button
+           disabled={!canEdit} 
+           onClick={handleSave}
+           className='text-gray-200'
+          >
+            Save
+          </Button>
         </div>
       </div>
 

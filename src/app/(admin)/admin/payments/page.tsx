@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface Payment {
   id: number
@@ -19,7 +20,9 @@ interface Payment {
 
 export default function ViewPayments() {
   const { supabase } = useSupabase()
+  const { adminRole } = useAuth();
   const [payments, setPayments] = useState<Payment[]>([])
+  const canEdit = adminRole === 'admin' || adminRole === 'editor';
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -86,6 +89,7 @@ export default function ViewPayments() {
                   <TableCell>
                     <Input
                       type="number"
+                      disabled={!canEdit}
                       defaultValue={p.bus?.e_payment || 0}
                       onBlur={async (e) => {
                         const value = Number(e.target.value);
@@ -103,6 +107,7 @@ export default function ViewPayments() {
 
                   {/* ✅ Editable Pay Status */}
                   <TableCell>
+                   {adminRole !== "viewer" ? ( 
                     <Select
                       defaultValue={p.pay_complete || 'Pending'}
                       onValueChange={async (status) => {
@@ -142,6 +147,14 @@ export default function ViewPayments() {
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                    ) : (
+                      <Input
+                        disabled
+                        type="text"
+                        placeholder={p.pay_complete ?? undefined}
+                        className='border rounded px-2 py-1 w-20'
+                      />
+                    )}
                   </TableCell>
 
                   <TableCell>{new Date(p.created_at).toLocaleDateString()}</TableCell>

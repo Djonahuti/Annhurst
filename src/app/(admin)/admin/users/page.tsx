@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { useRouter } from "next/navigation";
+import { Ban } from "lucide-react";
 
 interface Driver {
   id: number;
@@ -35,6 +36,7 @@ interface Admin {
 export default function ViewUsers() {
   const { supabase } = useSupabase();
   const { user, role } = useAuth();
+  const { adminRole } = useAuth();
   const router = useRouter();
 
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -104,6 +106,7 @@ export default function ViewUsers() {
                       <TableCell>{Array.isArray(d.address) ? d.address.join(", ") : d.address}</TableCell>
                       <TableCell>{d.kyc ? "Verified" : "Not Verified"}</TableCell>
                       <TableCell>
+                       {adminRole !== "viewer" ? (
                         <button
                           className={`px-3 py-1 rounded ${d.banned ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}
                           disabled={banLoading === `driver-${d.id}`}
@@ -111,6 +114,9 @@ export default function ViewUsers() {
                         >
                           {banLoading === `driver-${d.id}` ? '...' : d.banned ? 'Unban' : 'Ban'}
                         </button>
+                        ):(
+                          <span className="text-gray-400 italic"><Ban /></span>
+                        )} 
                       </TableCell>
                     </TableRow>
                   );
@@ -139,6 +145,7 @@ export default function ViewUsers() {
                       <TableCell>{c.email}</TableCell>
                       <TableCell>{Array.isArray(c.phone) ? c.phone.join(", ") : c.phone}</TableCell>
                       <TableCell>
+                       {adminRole !== "viewer" ? (
                         <button
                           className={`px-3 py-1 rounded ${c.banned ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}
                           disabled={banLoading === `coordinators-${c.id}`}
@@ -146,6 +153,9 @@ export default function ViewUsers() {
                         >
                           {banLoading === `coordinators-${c.id}` ? '...' : c.banned ? 'Unban' : 'Ban'}
                         </button>
+                        ):(
+                          <span className="text-gray-400 italic"><Ban /></span>
+                        )} 
                       </TableCell>
                     </TableRow>
                   );
@@ -156,6 +166,7 @@ export default function ViewUsers() {
         </AccordionItem>
         <AccordionItem value="admins">
           <AccordionTrigger className="text-2xl">Admins</AccordionTrigger>
+          {adminRole !== "viewer" ? (
           <AccordionContent>
             <Table>
               <TableHeader>
@@ -188,6 +199,9 @@ export default function ViewUsers() {
               </TableBody>
             </Table>
           </AccordionContent>
+          ):(
+            <span className="text-gray-400 italic">You only have Read Access, You can't View Admins</span>
+          )}
         </AccordionItem>
       </Accordion>
     </div>

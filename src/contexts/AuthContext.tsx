@@ -7,7 +7,8 @@ interface AuthContextType {
   user: User | null
   loading: boolean
   role: 'driver' | 'admin' | 'coordinator' | null
-  signIn: (email: string, password: string) => Promise<{ error: Error | null, role?: string | null }>
+  adminRole: 'viewer' | 'editor' | 'admin' | null
+  signIn: (email: string, password: string) => Promise<{ error: Error | null, role?: string | null, adminRole?: 'viewer' | 'editor' | 'admin' | null }>
   signOut: () => Promise<void>
 }
 
@@ -18,6 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [role, setRole] = useState<'driver' | 'admin' | 'coordinator' | null>(null)
+  const [adminRole, setAdminRole] = useState<'viewer' | 'editor' | 'admin' | null>(null)
 
   const fetchUserRole = useCallback(async (email: string) => {
     try {
@@ -31,10 +33,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (driver.banned) banned = true;
       }
 
-      const { data: admin } = await supabase.from('admins').select('id, banned').eq('email', email).single()
+      const { data: admin } = await supabase.from('admins').select('id, banned, role').eq('email', email).single()
       if (admin) {
         foundRole = 'admin';
         if (admin.banned) banned = true;
+        setAdminRole((admin.role as 'viewer' | 'editor' | 'admin') ?? null)
+        if (admin.role) localStorage.setItem('adminRole', admin.role as string)
       }
 
       const { data: coordinator } = await supabase.from('coordinators').select('id, banned').eq('email', email).single()
@@ -47,12 +51,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // If user is banned, sign them out
         await supabase.auth.signOut()
         setRole(null)
+        setAdminRole(null)
         localStorage.removeItem("role")
+        localStorage.removeItem("adminRole")
         return
       }
 
       setRole(foundRole ?? null)
       if (foundRole) localStorage.setItem("role", foundRole)
+      if (!admin) {
+        setAdminRole(null)
+        localStorage.removeItem('adminRole')
+      }
     } catch (error) {
       console.error('Error fetching user role:', error)
     }
@@ -67,6 +77,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const savedRole = localStorage.getItem("role") as 'driver' | 'admin' | 'coordinator' | null
         if (savedRole) {
           setRole(savedRole)
+          const savedAdminRole = localStorage.getItem('adminRole') as 'viewer' | 'editor' | 'admin' | null
+          setAdminRole(savedAdminRole ?? null)
         } else {
           // If no role in localStorage, fetch it from database
           await fetchUserRole(session.user.email!)
@@ -80,11 +92,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null)
       if (!session) {
         setRole(null)
+        setAdminRole(null)
         localStorage.removeItem("role")
+        localStorage.removeItem("adminRole")
       } else {
         const savedRole = localStorage.getItem("role") as 'driver' | 'admin' | 'coordinator' | null
         if (savedRole) {
           setRole(savedRole)
+          const savedAdminRole = localStorage.getItem('adminRole') as 'viewer' | 'editor' | 'admin' | null
+          setAdminRole(savedAdminRole ?? null)
         } else {
           // If no role in localStorage, fetch it from database
           await fetchUserRole(session.user.email!)
@@ -105,20 +121,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     // Get the role that was set by fetchUserRole
     const currentRole = localStorage.getItem("role") as 'driver' | 'admin' | 'coordinator' | null
+    const currentAdminRole = localStorage.getItem('adminRole') as 'viewer' | 'editor' | 'admin' | null
 
-    return { error: null, role: currentRole }
+    return { error: null, role: currentRole, adminRole: currentAdminRole }
   }
 
   const signOut = async () => {
     await supabase.auth.signOut()
     setRole(null)
+    setAdminRole(null)
     localStorage.removeItem("role")
+    localStorage.removeItem("adminRole")
   }
 
   const value = {
     user,
     loading,
     role,
+    adminRole,
     signIn,
     signOut,
   }

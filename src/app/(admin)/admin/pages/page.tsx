@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { FileText, Calendar, Edit, Eye, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase/client'
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Page {
   id: string
@@ -21,6 +22,7 @@ interface Page {
 }
 
 export default function AdminPages() {
+  const {adminRole} = useAuth();
   const [pages, setPages] = useState<Page[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -83,9 +85,13 @@ export default function AdminPages() {
           <h1 className="text-3xl font-bold">Pages</h1>
           <p className="mt-2 text-gray-600">Manage your website pages and content</p>
         </div>
+       {adminRole !== "viewer" ? ( 
         <Link href="/admin/pages/new">
           <Button className='text-gray-200'>New Page</Button>
         </Link>
+        ):(
+          <span className="text-gray-400 italic">Viewer</span>
+        )}
       </div>
 
       {/* Search */}
@@ -132,12 +138,18 @@ export default function AdminPages() {
                 <Link href={`/admin/pages/edit/${page.id}`}>
                   <Button variant="ghost" size="sm"><Edit className="h-4 w-4" /></Button>
                 </Link>
+                {adminRole !== "viewer" ? (
+                <> 
                 <Button variant="ghost" size="sm" onClick={() => handleTogglePublish(page.id, page.is_published)}>
                   <Eye className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => handleDeletePage(page.id)}>
                   <Trash2 className="h-4 w-4 text-red-600" />
                 </Button>
+                </> 
+                ):(
+                  <span>.</span>
+                )}
               </div>
             </div>
           ))}

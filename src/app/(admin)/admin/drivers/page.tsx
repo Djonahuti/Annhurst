@@ -24,6 +24,8 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import AddDriver from "@/components/Shared/Admin/AddDriver";
 import Modal from "@/components/Modal";
+import { useAuth } from "@/contexts/AuthContext";
+import { Ban } from "lucide-react";
 
 interface Driver {
   id: number;
@@ -88,6 +90,7 @@ type DriverFormValues = z.infer<typeof driverSchema>;
 
 export default function AdminDrivers() {
   const { supabase } = useSupabase();
+  const { adminRole } = useAuth();
   const router = useRouter();
   const [isAddDriverModalOpen, setAddDriverModalOpen] = useState(false);
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -329,6 +332,7 @@ export default function AdminDrivers() {
                     <TableCell>{d.plate_no || "N/A"}</TableCell>
                     <TableCell>{d.coordinator_name || "Unassigned"}</TableCell>
                     <TableCell>
+                     {adminRole !== "viewer" ? ( 
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button
@@ -491,6 +495,9 @@ export default function AdminDrivers() {
                           </Form>
                         </DialogContent>
                       </Dialog>
+                      ):(
+                        <span className="text-gray-400 italic"><Ban /></span>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
